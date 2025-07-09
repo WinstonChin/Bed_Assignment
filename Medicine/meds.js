@@ -27,6 +27,27 @@ async function fetchMedsFromAPI() {
   const data = await res.json();
   allMeds = data;
   renderCalendar();
+  fetchMedsFromAPI().then(startReminderChecker);
+}
+
+let remindedMeds = new Set();
+
+function startReminderChecker() {
+  setInterval(() => {
+    const now = new Date();
+
+    allMeds.forEach(med => {
+      const medId = med.id;
+      const medTime = new Date(med.datetime);
+      const timeDiff = Math.abs(now - medTime);
+      const withinOneMinute = timeDiff <= 60000;
+
+      if (withinOneMinute && !remindedMeds.has(medId)) {
+        alert(`Reminder: Take ${med.medicine} now!`);
+        remindedMeds.add(medId); // so it doesn’t alert again
+      }
+    });
+  }, 60000); // check every 1 min
 }
 
 function renderCalendar() {
