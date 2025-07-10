@@ -7,7 +7,7 @@ const medForm = document.getElementById('med-form');
 const modal = document.getElementById('modal');
 const editForm = document.getElementById('edit-form');
 const deleteBtn = document.getElementById('delete-btn');
-const cancelBtn = document.getElementById('cancel-btn');
+
 
 let currentDate = new Date();
 let allMeds = []; 
@@ -27,8 +27,13 @@ async function fetchMedsFromAPI() {
   const data = await res.json();
   allMeds = data;
   renderCalendar();
-  fetchMedsFromAPI().then(startReminderChecker);
+  if (!window.reminderStarted) {
+    startReminderChecker();
+    window.reminderStarted = true;
+  }
+  
 }
+
 
 let remindedMeds = new Set();
 
