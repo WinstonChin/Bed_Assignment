@@ -9,6 +9,7 @@ const { loginUser } = require('./Login/MVC/loginController');
 const { signupUser } = require('./SignUp/MVC/signupController');
 const medsController = require('./Medicine/MVC/medsController');
 const appointmentController = require('./Appointment/MVC/appointmentController');
+const moodController = require('./DailyPlanner/MVC/dailyController'); 
 
 // Import validation middleware
 const { validateLogin } = require('./Login/MVC/loginValidation');
@@ -44,6 +45,10 @@ app.get("/api/appointments/:id", validateAppointmentID, appointmentController.ge
 app.post("/api/appointments", validateAppointment, appointmentController.createAppointment);
 app.put("/api/appointments/:id", validateAppointmentID, validateAppointment, appointmentController.updateAppointment);
 app.delete("/api/appointments/:id", validateAppointmentID, appointmentController.deleteAppointment);
+
+//Mood Tracker//
+app.get('/api/moods/:userId', moodController.getMoodLogs);
+app.post('/api/moods', moodController.logMood);
 
 
 // Serve all frontend folders as static
