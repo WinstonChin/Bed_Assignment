@@ -115,6 +115,25 @@
     .hidden {
       display: none;
     }
+  .history-btn-container {
+  text-align: center;
+  margin: 20px 0;
+}
+
+.history-link {
+  display: inline-block;
+  padding: 12px 24px;
+  background-color: #4CAF50;
+  color: white;
+  text-decoration: none;
+  border-radius: 4px;
+  font-size: 16px;
+  transition: background-color 0.3s;
+}
+
+.history-link:hover {
+  background-color: #45a049;
+}
   </style>
 </head>
 <body>
@@ -130,6 +149,7 @@
       <span id="month-year"></span>
       <button id="next-month">Next →</button>
     </div>
+
 
     <div id="calendar-header">
       <div>Sun</div>
@@ -150,6 +170,9 @@
       <input type="datetime-local" id="med-datetime" required />
       <button type="submit">Add Reminder</button>
     </form>
+    <div class="history-btn-container">
+  <a href="appointmenthistory.html" class="history-link">View Appointment History</a>
+</div>
   </main>
 
   <div id="modal">
