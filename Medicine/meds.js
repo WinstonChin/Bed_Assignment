@@ -55,6 +55,7 @@ function startReminderChecker() {
   }, 60000); // check every 1 min
 }
 
+//show calender//
 function renderCalendar() {
   const year = currentDate.getFullYear();
   const month = currentDate.getMonth();
@@ -92,6 +93,7 @@ function renderCalendar() {
   }
 }
 
+//create med reminder form//
 medForm.addEventListener('submit', async (e) => {
   e.preventDefault();
   const name = document.getElementById('med-name').value;
@@ -107,16 +109,19 @@ medForm.addEventListener('submit', async (e) => {
   await fetchMedsFromAPI();
 });
 
+//previous month//
 prevBtn.addEventListener('click', () => {
   currentDate.setMonth(currentDate.getMonth() - 1);
   renderCalendar();
 });
 
+//next month//
 nextBtn.addEventListener('click', () => {
   currentDate.setMonth(currentDate.getMonth() + 1);
   renderCalendar();
 });
 
+//edit popup - similar to add//
 function openEditModal(med) {
   selectedMedId = med.id;
   document.getElementById('edit-name').value = med.medicine;
@@ -138,7 +143,7 @@ editForm.addEventListener('submit', async (e) => {
   modal.classList.remove('visible');
   await fetchMedsFromAPI();
 });
-
+// popup - delete//
 deleteBtn.addEventListener('click', async () => {
   if (confirm("Are you sure you want to delete this reminder?")) {
     await fetch(`/api/meds/${selectedMedId}`, {
