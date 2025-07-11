@@ -72,6 +72,8 @@ app.use(express.static(path.join(__dirname, 'contacts')));
 app.use(express.static(path.join(__dirname, 'profile')));
 app.use(express.static(path.join(__dirname, 'Login')));
 app.use(express.static(path.join(__dirname, 'SignUp')));
+app.use(express.static(path.join(__dirname, 'Journal')));
+
 
 
 // Start server
