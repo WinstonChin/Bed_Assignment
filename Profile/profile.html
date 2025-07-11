@@ -70,17 +70,14 @@
 </head>
 <body>
 
-  <div id="header"></div>
-  <div id="info">
-      <div>Name:</div>
-      <div>Email</div>
-      <input type="datetime-local" id="birthdate" required />
-  
-    </div>
-
+  <div id="profile-info">
+  <div>Name: <span id="profile-name"></span></div>
+  <div>Email: <span id="profile-email"></span></div>
+  <div>
+    <img id="output_image" height="100" width="100" style="border-radius: 50%;" />
   </div>
-  <img id="output_image" height=50px width=50px>
   <input type="file" accept="image/*" onchange="preview_image(event)">
+</div>
 
   <script>
     fetch('header.html')
