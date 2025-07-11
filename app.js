@@ -10,6 +10,7 @@ const { signupUser } = require('./SignUp/MVC/signupController');
 const medsController = require('./Medicine/MVC/medsController');
 const appointmentController = require('./Appointment/MVC/appointmentController');
 const moodController = require('./DailyPlanner/MVC/dailyController'); 
+const emergencyController = require('./Contacts/MVC/emergencyController');
 
 // Import validation middleware
 const { validateLogin } = require('./Login/MVC/loginValidation');
@@ -17,6 +18,8 @@ const { validateSignup } = require('./SignUp/MVC/signupValidation');
 const { validateDate, validateDateID } = require('./Medicine/MVC/medsValidation');
 const { authenticate } = require("./Login/authenticate");
 const { validateAppointment, validateAppointmentID } = require('./Appointment/MVC/appointmentValidation');
+const { validateEmergencyInfo } = require('./Contacts/MVC/emergencyValidation');
+
 
 
 const app = express();
@@ -52,6 +55,10 @@ app.delete("/api/appointments/:id", validateAppointmentID, appointmentController
 //Mood Tracker//
 app.get('/api/moods/:userId', moodController.getMoodLogs);
 app.post('/api/moods', moodController.logMood);
+
+//Emergency Info Card//
+app.get('/api/emergency-info/:userId', emergencyController.getEmergencyInfo);
+app.post('/api/emergency-info', validateEmergencyInfo, emergencyController.upsertEmergencyInfo);
 
 //davian//
 const dailyPlannerController = require('./Daily-Planner/MVC/dailyPlannerController');

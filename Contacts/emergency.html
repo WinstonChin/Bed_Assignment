@@ -1,61 +1,108 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <title>Social Activities</title>
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta charset="UTF-8">
+  <title>Emergency Info Card</title>
   <style>
     body {
-      font-family: 'Segoe UI', sans-serif;
-      margin: 0;
-      background-color: #f7fbff;
-      color: #333;
+      font-family: Arial, sans-serif;
+      background: #f5faff;
+      padding: 20px;
     }
-
-    #header {
-      margin-bottom: 30px;
-    }
-
-    main {
-      padding: 30px 20px;
-      text-align: center;
-    }
-
-    .content-section {
-      background-color: white;
+    .container {
+      max-width: 700px;
+      margin: auto;
+      background: #fff;
       padding: 30px;
-      margin: 0 auto;
-      border-radius: 20px;
-      max-width: 800px;
-      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.07);
+      border-radius: 10px;
+      box-shadow: 0 0 10px #ccc;
     }
-
-    .content-section h2 {
-      font-size: 22px;
-      color: #2a6b8f;
+    h2 { text-align: center; color: #2a6b8f; }
+    label { display: block; margin-top: 15px; font-weight: bold; }
+    input, textarea {
+      width: 100%;
+      padding: 10px;
+      margin-top: 5px;
+      border: 1px solid #ddd;
+      border-radius: 5px;
     }
-
-    .content-section p {
-      font-size: 18px;
-      margin-top: 10px;
+    button {
+      margin-top: 20px;
+      padding: 10px 20px;
+      background: #2a6b8f;
+      color: #fff;
+      border: none;
+      border-radius: 5px;
+    }
+    .info {
+      background: #e6f7ff;
+      margin-top: 30px;
+      padding: 15px;
+      border-radius: 8px;
     }
   </style>
 </head>
 <body>
+  <div class="container">
+    <h2>Emergency Info Card</h2>
 
-  <!-- Load header.html here -->
-  <div id="header"></div>
+    <label>Blood Type</label>
+    <input type="text" id="bloodType">
 
+    <label>Allergies</label>
+    <textarea id="allergies" rows="2"></textarea>
 
+    <label>Medical Conditions</label>
+    <textarea id="medicalConditions" rows="2"></textarea>
+
+    <label>Emergency Contact Name</label>
+    <input type="text" id="emergencyContactName">
+
+    <label>Emergency Contact Phone</label>
+    <input type="text" id="emergencyContactPhone">
+
+    <button onclick="saveEmergencyInfo()">Save Info</button>
+
+    <div class="info" id="infoDisplay"></div>
+  </div>
 
   <script>
-    // Fetch and insert the header
-    fetch('header.html')
-      .then(response => response.text())
-      .then(data => {
-        document.getElementById('header').innerHTML = data;
-      });
-  </script>
+    const userId = 1; // Replace with actual user ID if using auth
 
+    async function saveEmergencyInfo() {
+      const data = {
+        userId,
+        bloodType: document.getElementById('bloodType').value,
+        allergies: document.getElementById('allergies').value,
+        medicalConditions: document.getElementById('medicalConditions').value,
+        emergencyContactName: document.getElementById('emergencyContactName').value,
+        emergencyContactPhone: document.getElementById('emergencyContactPhone').value
+      };
+
+      const res = await fetch('/api/emergency-info', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(data)
+      });
+
+      const result = await res.json();
+      alert(result.message);
+      loadEmergencyInfo();
+    }
+
+    async function loadEmergencyInfo() {
+      const res = await fetch(`/api/emergency-info/${userId}`);
+      const info = await res.json();
+
+      document.getElementById('infoDisplay').innerHTML = `
+        <strong>Blood Type:</strong> ${info.BloodType || 'N/A'}<br>
+        <strong>Allergies:</strong> ${info.Allergies || 'N/A'}<br>
+        <strong>Medical Conditions:</strong> ${info.MedicalConditions || 'N/A'}<br>
+        <strong>Emergency Contact:</strong> ${info.EmergencyContactName || 'N/A'} (${info.EmergencyContactPhone || 'N/A'})
+      `;
+    }
+
+    window.onload = loadEmergencyInfo;
+  </script>
 </body>
 </html>
