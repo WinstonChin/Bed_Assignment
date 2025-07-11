@@ -1,71 +1,96 @@
 const express = require('express');
-const cors = require('cors');
 const path = require('path');
 const sql = require('mssql');
+const cors = require('cors');
 require('dotenv').config();
 
-// Import controllers
+// Database Configuration
+const dbConfig = require("./dbConfig");
+
+// Import Controllers - make sure these paths are correct
 const { loginUser } = require('./Login/MVC/loginController');
 const { signupUser } = require('./SignUp/MVC/signupController');
 const medsController = require('./Medicine/MVC/medsController');
 const appointmentController = require('./Appointment/MVC/appointmentController');
-
-// Import validation middleware
-const { validateLogin } = require('./Login/MVC/loginValidation');
-const { validateSignup } = require('./SignUp/MVC/signupValidation');
-const { validateDate, validateDateID } = require('./Medicine/MVC/medsValidation');
-const { validateAppointment, validateAppointmentID } = require('./Appointment/MVC/appointmentValidation');
+const journalController = require('./Health Journal/MVC/journalController');
 
 
 const app = express();
-const PORT = process.env.PORT || 3000;
+const port = process.env.PORT || 3000;
 
 // Middleware
 app.use(cors());
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
+
+// Static Files
 app.use(express.static(path.join(__dirname, 'public')));
-
-// Routes
-//Signup/Login//
-app.post('/login', validateLogin, loginUser);
-app.post('/signup', validateSignup, signupUser);
-
-//Medicine//
-app.get("/api/meds", medsController.getAllDates);
-app.get("/api/meds/:id", validateDateID, medsController.getDateById);
-app.post("/api/meds", validateDate, medsController.createDate);
-app.put("/api/meds/:id", validateDateID, validateDate, medsController.updateDate);
-app.delete("/api/meds/:id", validateDateID, medsController.deleteDate);
-
-//Appointment//
-app.get("/api/appointments", appointmentController.getAllAppointments);
-app.get("/api/appointments/:id", validateAppointmentID, appointmentController.getAppointmentById);
-app.post("/api/appointments", validateAppointment, appointmentController.createAppointment);
-app.put("/api/appointments/:id", validateAppointmentID, validateAppointment, appointmentController.updateAppointment);
-app.delete("/api/appointments/:id", validateAppointmentID, appointmentController.deleteAppointment);
-
-
-// Serve all frontend folders as static
 app.use(express.static(path.join(__dirname, 'Medicine')));
-app.use(express.static(path.join(__dirname, 'appointment')));
-app.use(express.static(path.join(__dirname, 'dailyplanner')));
-app.use(express.static(path.join(__dirname, 'contacts')));
-app.use(express.static(path.join(__dirname, 'profile')));
+app.use(express.static(path.join(__dirname, 'Appointment')));
+app.use(express.static(path.join(__dirname, 'Health Journal')));
 app.use(express.static(path.join(__dirname, 'Login')));
 app.use(express.static(path.join(__dirname, 'SignUp')));
 
+// Routes
+app.post('/login', loginUser);
+app.post('/signup', signupUser);
 
-// Start server
-app.listen(PORT, () => {
-  console.log(`Server running on http://localhost:${PORT}`);
+// Medicine Routes
+app.get("/api/meds", medsController.getAllDates);
+app.get("/api/meds/:id", medsController.getDateById);
+app.post("/api/meds", medsController.createDate);
+app.put("/api/meds/:id", medsController.updateDate);
+app.delete("/api/meds/:id", medsController.deleteDate);
+
+// Appointment Routes
+app.get("/api/appointments", appointmentController.getAllAppointments);
+app.get("/api/appointments/:id", appointmentController.getAppointmentById);
+app.post("/api/appointments", appointmentController.createAppointment);
+app.put("/api/appointments/:id", appointmentController.updateAppointment);
+app.delete("/api/appointments/:id", appointmentController.deleteAppointment);
+
+// Health Journal Routes
+app.get('/health-journal', journalController.GetAllEntries);
+app.get('/health-journal/:id', journalController.GetEntryById);
+app.post('/health-journal', jurnalController.CreateEntry);
+app.put('/health-journal/:id', journalController.UpdateEntry);
+app.delete('/health-journal/:id', journalController.DeleteEntry);
+
+// Test route
+app.get("/api/test", (req, res) => {
+    res.json({ message: "Server is working!" });
 });
 
-// Graceful shutdown
-process.on("SIGINT", async () => {
-  console.log("Shutting down server...");
-  await sql.close();
-  process.exit(0);
+// Error Handler
+app.use((err, req, res, next) => {
+    console.error(err.stack);
+    res.status(500).json({ error: 'Something went wrong!' });
 });
 
-module.exports = app;
+app.post("/api/journal", (req, res, next) => {
+  console.log("Received journal entry:", req.body); // Debug log
+  next();
+}, journalController.createJournalEntry);
+
+// Database Connection
+async function startServer() {
+    try {
+        await sql.connect(dbConfig);
+        console.log("Database connected");
+        app.listen(port, () => {
+            console.log(`Server running on http://localhost:${port}`);
+        });
+    } catch (err) {
+        console.error("Database connection failed:", err);
+        process.exit(1);
+    }
+}
+
+// Start the server
+startServer();
+
+process.on('SIGINT', async () => {
+    await sql.close();
+    console.log("Database connection closed");
+    process.exit(0);
+});

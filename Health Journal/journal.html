@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Health Journal</title>
+  <link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+  <h1>My Health Journal</h1>
+
+  <!-- Form -->
+  <form id="journal-form">
+    <input type="hidden" id="entry-id" />
+    <label>
+      Date:
+      <input type="date" id="entry-date" required />
+    </label>
+    <label>
+      Pain Level (0–10):
+      <input type="number" id="pain-level" min="0" max="10" required />
+    </label>
+    <label>
+      Pain Location:
+      <input type="text" id="pain-location" maxlength="50" />
+    </label>
+    <label>
+      Symptoms:
+      <input type="text" id="symptoms" maxlength="100" required />
+    </label>
+    <label>
+      Notes:
+      <textarea id="notes" maxlength="500" required></textarea>
+    </label>
+    <button type="submit">Save Entry</button>
+  </form>
+
+  <hr />
+
+  <!-- Entries -->
+  <h2>Journal Entries</h2>
+  <ul id="journal-list"></ul>
+
+  <script src="healthjournal.js"></script>
+</body>
+</html>
