@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>📘 Journey</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+</head>
+<body>
+
+  <!-- Placeholder for header -->
+  <div id="header-container"></div>
+
+  <main>
+    <h2>Your Journey</h2>
+    <!-- Your journal content goes here -->
+  </main>
+
+  <script>
+    // Dynamically load the header
+    fetch('header.html')
+      .then(response => response.text())
+      .then(data => {
+        document.getElementById('header-container').innerHTML = data;
+      })
+      .catch(error => console.error('Error loading header:', error));
+  </script>
+
+</body>
+</html>
