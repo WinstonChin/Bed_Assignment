@@ -53,6 +53,18 @@ app.delete("/api/appointments/:id", validateAppointmentID, appointmentController
 app.get('/api/moods/:userId', moodController.getMoodLogs);
 app.post('/api/moods', moodController.logMood);
 
+//davian//
+const dailyPlannerController = require('./Daily-Planner/MVC/dailyPlannerController');
+const panicButtonController = require('./PanicButton/MVC/panicButtonController');
+
+// Daily Planner Routes
+app.get("/api/dailyPlanner/:userId", dailyPlannerController.getAllActivities);
+app.post("/api/dailyPlanner", dailyPlannerController.createActivity);
+app.put("/api/dailyPlanner/status", dailyPlannerController.updateActivityStatus);
+
+// Panic Button Route
+app.post("/api/panicButton", panicButtonController.triggerPanicButton);
+
 
 
 
