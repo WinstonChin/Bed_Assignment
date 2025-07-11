@@ -4,7 +4,124 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>Health Journal</title>
-  <link rel="stylesheet" href="styles.css" />
+  <style>
+    /* Reset */
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+  font-family: 'Segoe UI', sans-serif;
+}
+
+body {
+  background-color: #f9f9f9;
+  padding: 2rem;
+  color: #333;
+}
+
+/* Header */
+h1 {
+  text-align: center;
+  margin-bottom: 2rem;
+  color: #0077cc;
+}
+
+/* Form */
+form {
+  background-color: #ffffff;
+  padding: 1.5rem;
+  border-radius: 12px;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+  max-width: 600px;
+  margin: 0 auto 2rem;
+}
+
+form label {
+  display: block;
+  margin-bottom: 1rem;
+  font-weight: 500;
+}
+
+form input,
+form textarea {
+  width: 100%;
+  padding: 0.75rem;
+  margin-top: 0.25rem;
+  border: 1px solid #ccc;
+  border-radius: 8px;
+  font-size: 1rem;
+  resize: vertical;
+}
+
+form button {
+  margin-top: 1rem;
+  background-color: #0077cc;
+  color: #fff;
+  padding: 0.75rem 1.5rem;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  font-size: 1rem;
+}
+
+form button:hover {
+  background-color: #005fa3;
+}
+
+/* Entry List */
+h2 {
+  text-align: center;
+  margin-bottom: 1rem;
+}
+
+#journal-list {
+  max-width: 800px;
+  margin: 0 auto;
+  list-style: none;
+  padding: 0;
+}
+
+#journal-list li {
+  background-color: #ffffff;
+  padding: 1rem;
+  margin-bottom: 1rem;
+  border-radius: 10px;
+  box-shadow: 0 1px 6px rgba(0,0,0,0.08);
+}
+
+#journal-list li strong {
+  color: #333;
+}
+
+#journal-list li em {
+  font-style: italic;
+  color: #555;
+}
+
+#journal-list button {
+  margin-right: 0.5rem;
+  margin-top: 0.5rem;
+  padding: 0.4rem 0.8rem;
+  font-size: 0.9rem;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+}
+
+#journal-list button:first-of-type {
+  background-color: #ffcc00;
+  color: #333;
+}
+
+#journal-list button:last-of-type {
+  background-color: #ff4d4d;
+  color: #fff;
+}
+
+#journal-list button:hover {
+  opacity: 0.9;
+}
+  </style>
 </head>
 <body>
   <h1>My Health Journal</h1>

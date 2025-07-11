@@ -1,5 +1,5 @@
-const healthJournalModel = require('../Models/healthJournalModel');
-const healthJournalSchema = require('../Validations/healthJournalValidation');
+const journalModel = require('./journalModel');
+const journalSchema = require('./journalValidation');
 
 // GET ALL ENTRIES FOR LOGGED-IN USER
 async function GetAllEntries(req, res) {
@@ -7,7 +7,7 @@ async function GetAllEntries(req, res) {
   if (!userId) return res.status(401).json({ error: 'Unauthorized' });
 
   try {
-    const entries = await healthJournalModel.GetAllEntriesByUser(userId);
+    const entries = await journalModel.GetAllEntriesByUser(userId);
     res.json(entries);
   } catch (error) {
     console.error('GetAllEntries error:', error);
@@ -22,7 +22,7 @@ async function GetEntryById(req, res) {
   if (!userId) return res.status(401).json({ error: 'Unauthorized' });
 
   try {
-    const entry = await healthJournalModel.GetEntryById(entryId, userId);
+    const entry = await journalModel.GetEntryById(entryId, userId);
     if (!entry) return res.status(404).json({ error: 'Entry not found' });
 
     res.json(entry);
@@ -37,11 +37,11 @@ async function CreateEntry(req, res) {
   const userId = req.user?.id;
   if (!userId) return res.status(401).json({ error: 'Unauthorized' });
 
-  const { error, value } = healthJournalSchema.validate(req.body);
+  const { error, value } = journalSchema.validate(req.body);
   if (error) return res.status(400).json({ error: error.details[0].message });
 
   try {
-    await healthJournalModel.CreateEntry({ ...value, user_id: userId });
+    await journalModel.CreateEntry({ ...value, user_id: userId });
     res.status(201).json({ message: 'Health journal entry created' });
   } catch (err) {
     console.error('CreateEntry error:', err);
@@ -55,11 +55,11 @@ async function UpdateEntry(req, res) {
   const entryId = parseInt(req.params.id);
   if (!userId) return res.status(401).json({ error: 'Unauthorized' });
 
-  const { error, value } = healthJournalSchema.validate(req.body);
+  const { error, value } = journalSchema.validate(req.body);
   if (error) return res.status(400).json({ error: error.details[0].message });
 
   try {
-    const updated = await healthJournalModel.UpdateEntry(entryId, userId, value);
+    const updated = await journalModel.UpdateEntry(entryId, userId, value);
     if (!updated) return res.status(404).json({ error: 'Entry not found or not authorized' });
 
     res.json({ message: 'Entry updated', entry: updated });
@@ -76,7 +76,7 @@ async function DeleteEntry(req, res) {
   if (!userId) return res.status(401).json({ error: 'Unauthorized' });
 
   try {
-    const deleted = await healthJournalModel.DeleteEntry(entryId, userId);
+    const deleted = await journalModel.DeleteEntry(entryId, userId);
     if (!deleted) return res.status(404).json({ error: 'Entry not found or not authorized' });
 
     res.json({ message: 'Entry deleted' });

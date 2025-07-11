@@ -111,7 +111,7 @@ app.delete("/api/appointments/:id", appointmentController.deleteAppointment);
 // Health Journal Routes
 app.get('/health-journal', journalController.GetAllEntries);
 app.get('/health-journal/:id', journalController.GetEntryById);
-app.post('/health-journal', jurnalController.CreateEntry);
+app.post('/health-journal', journalController.CreateEntry);
 app.put('/health-journal/:id', journalController.UpdateEntry);
 app.delete('/health-journal/:id', journalController.DeleteEntry);
 
