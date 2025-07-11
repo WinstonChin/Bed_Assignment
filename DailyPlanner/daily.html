@@ -2,19 +2,25 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <title>Social Activities</title>
+  <title>Mood Tracker & Daily Planner</title>
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <style>
     body {
-      font-family: 'Segoe UI', sans-serif;
+        font-family: Arial, sans-serif;
+        font-size: 18px;
+        margin: 0;
+        background-color: #f9f9f9;
+      }
+    html, body {
       margin: 0;
-      background-color: #f7fbff;
-      color: #333;
+      padding: 0;
     }
 
     #header {
-      margin-bottom: 30px;
+      margin: 0;
+      padding: 0;
     }
+
 
     main {
       padding: 30px 20px;
@@ -24,31 +30,129 @@
     .content-section {
       background-color: white;
       padding: 30px;
-      margin: 0 auto;
+      margin: 30px auto;
       border-radius: 20px;
       max-width: 800px;
       box-shadow: 0 4px 12px rgba(0, 0, 0, 0.07);
     }
 
     .content-section h2 {
-      font-size: 22px;
+      font-size: 24px;
       color: #2a6b8f;
     }
 
-    .content-section p {
+    .content-section p,
+    label {
       font-size: 18px;
       margin-top: 10px;
+      display: block;
+    }
+
+    input,
+    select,
+    textarea {
+      width: 100%;
+      padding: 10px;
+      margin-top: 5px;
+      font-size: 16px;
+      border-radius: 8px;
+      border: 1px solid #ccc;
+    }
+    button {
+      padding: 10px 20px;
+      font-size: 16px;
+      background-color: #2a6b8f;
+      color: white;
+      border: none;
+      border-radius: 8px;
+      cursor: pointer;
+      margin-top: 0; 
+    }
+
+    .content-section button {
+      margin-top: 15px;
+    }
+
+
+    ul {
+      list-style-type: none;
+      padding: 0;
+      margin-top: 20px;
+      text-align: left;
+    }
+
+    ul li {
+      background-color: #eef6fb;
+      margin-bottom: 10px;
+      padding: 10px;
+      border-radius: 10px;
     }
   </style>
 </head>
 <body>
 
-  <!-- Load header.html here -->
   <div id="header"></div>
 
+  <main>
+    <!-- Mood Tracker -->
+    <div class="content-section">
+      <h2>Mood Tracker</h2>
+
+      <label for="logDate">Date</label>
+      <input type="date" id="logDate" />
+
+      <label for="moodSelect">Mood</label>
+      <select id="moodSelect">
+        <option value="1">Happy</option>
+        <option value="2">Tired</option>
+        <option value="3">Lonely</option>
+        <option value="4">Anxious</option>
+        <option value="5">Excited</option>
+        <option value="6">Sad</option>
+        <option value="7">Calm</option>
+      </select>
+
+      <label for="moodNote">Note (optional)</label>
+      <textarea id="moodNote" placeholder="Write something..."></textarea>
+
+      <button id="submitMood">Log Mood</button>
+
+      <h3>Logged Moods</h3>
+      <ul id="moodLogs"></ul>
+    </div>
+
+    <!-- Daily Planner -->
+    <div class="content-section">
+      <h2>Daily Planner</h2>
+
+      <label for="plannerUser">User ID</label>
+      <input type="number" id="plannerUser" />
+
+      <label for="activity">Activity</label>
+      <input type="text" id="activity" placeholder="e.g. Morning Walk" />
+
+      <label for="startTime">Start Time</label>
+      <input type="time" id="startTime" />
+
+      <label for="endTime">End Time</label>
+      <input type="time" id="endTime" />
+
+      <label for="status">Status</label>
+      <select id="status">
+        <option value="pending">Pending</option>
+        <option value="completed">Completed</option>
+        <option value="missed">Missed</option>
+      </select>
+
+      <button id="addPlanner">Add Activity</button>
+
+      <h3>Planned Activities</h3>
+      <ul id="plannerList"></ul>
+    </div>
+  </main>
 
   <script>
-    // Fetch and insert the header
+    // Load shared header
     fetch('header.html')
       .then(response => response.text())
       .then(data => {
@@ -56,5 +160,7 @@
       });
   </script>
 
+  <!-- JS for mood tracker and planner -->
+  <script src="daily.js"></script>
 </body>
 </html>

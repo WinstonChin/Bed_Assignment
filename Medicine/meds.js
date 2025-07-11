@@ -7,11 +7,11 @@ const medForm = document.getElementById('med-form');
 const modal = document.getElementById('modal');
 const editForm = document.getElementById('edit-form');
 const deleteBtn = document.getElementById('delete-btn');
-const cancelBtn = document.getElementById('cancel-btn');
 
 let currentDate = new Date();
-let allMeds = []; 
+let allMeds = [];
 let selectedMedId = null;
+let remindedMeds = new Set();
 
 function getDateKey(date) {
   return date.toISOString().split('T')[0];
@@ -22,16 +22,36 @@ function formatDateTimeLocal(datetime) {
   return dt.toISOString().slice(0, 16); // YYYY-MM-DDTHH:mm
 }
 
+// Fetch medicine reminders from API
 async function fetchMedsFromAPI() {
-  const res = await fetch("/api/meds");
+  const token = localStorage.getItem('token');
+  if (!token) {
+    console.error("Missing token");
+    return;
+  }
+
+  const res = await fetch("/api/meds", {
+    headers: {
+      "Authorization": `Bearer ${token}`
+    }
+  });
+
+  if (!res.ok) {
+    console.error("Failed to fetch meds:", await res.text());
+    return;
+  }
+
   const data = await res.json();
   allMeds = data;
   renderCalendar();
-  fetchMedsFromAPI().then(startReminderChecker);
+
+  if (!window.reminderStarted) {
+    startReminderChecker();
+    window.reminderStarted = true;
+  }
 }
 
-let remindedMeds = new Set();
-
+// Reminder notification
 function startReminderChecker() {
   setInterval(() => {
     const now = new Date();
@@ -44,12 +64,13 @@ function startReminderChecker() {
 
       if (withinOneMinute && !remindedMeds.has(medId)) {
         alert(`Reminder: Take ${med.medicine} now!`);
-        remindedMeds.add(medId); // so it doesn’t alert again
+        remindedMeds.add(medId);
       }
     });
-  }, 60000); // check every 1 min
+  }, 60000); // Every 1 min
 }
 
+// Render calendar
 function renderCalendar() {
   const year = currentDate.getFullYear();
   const month = currentDate.getMonth();
@@ -87,14 +108,19 @@ function renderCalendar() {
   }
 }
 
+// Add new reminder
 medForm.addEventListener('submit', async (e) => {
   e.preventDefault();
   const name = document.getElementById('med-name').value;
   const datetime = document.getElementById('med-datetime').value;
+  const token = localStorage.getItem('token');
 
   await fetch("/api/meds", {
     method: "POST",
-    headers: { "Content-Type": "application/json" },
+    headers: {
+      "Content-Type": "application/json",
+      "Authorization": `Bearer ${token}`
+    },
     body: JSON.stringify({ medicine: name, datetime })
   });
 
@@ -102,6 +128,7 @@ medForm.addEventListener('submit', async (e) => {
   await fetchMedsFromAPI();
 });
 
+// Navigate months
 prevBtn.addEventListener('click', () => {
   currentDate.setMonth(currentDate.getMonth() - 1);
   renderCalendar();
@@ -112,6 +139,7 @@ nextBtn.addEventListener('click', () => {
   renderCalendar();
 });
 
+// Open modal for editing
 function openEditModal(med) {
   selectedMedId = med.id;
   document.getElementById('edit-name').value = med.medicine;
@@ -119,14 +147,19 @@ function openEditModal(med) {
   modal.classList.add('visible');
 }
 
+// Update reminder
 editForm.addEventListener('submit', async (e) => {
   e.preventDefault();
   const updatedName = document.getElementById('edit-name').value;
   const updatedDatetime = document.getElementById('edit-datetime').value;
+  const token = localStorage.getItem('token');
 
   await fetch(`/api/meds/${selectedMedId}`, {
     method: "PUT",
-    headers: { "Content-Type": "application/json" },
+    headers: {
+      "Content-Type": "application/json",
+      "Authorization": `Bearer ${token}`
+    },
     body: JSON.stringify({ medicine: updatedName, datetime: updatedDatetime })
   });
 
@@ -134,10 +167,16 @@ editForm.addEventListener('submit', async (e) => {
   await fetchMedsFromAPI();
 });
 
+// Delete reminder
 deleteBtn.addEventListener('click', async () => {
   if (confirm("Are you sure you want to delete this reminder?")) {
+    const token = localStorage.getItem('token');
+
     await fetch(`/api/meds/${selectedMedId}`, {
-      method: "DELETE"
+      method: "DELETE",
+      headers: {
+        "Authorization": `Bearer ${token}`
+      }
     });
 
     modal.classList.remove('visible');
@@ -145,6 +184,5 @@ deleteBtn.addEventListener('click', async () => {
   }
 });
 
-
-
+// Load on page start
 fetchMedsFromAPI();

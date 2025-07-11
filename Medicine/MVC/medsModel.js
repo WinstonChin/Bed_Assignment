@@ -1,149 +1,102 @@
-const sql = require('mssql');
-const dbConfig = require('../../dbConfig');
+const sql = require("mssql");
+const dbConfig = require("../../dbConfig");
 
-
-//GET//
-async function GetAllDates(){
-    let connection;
-    try{
-        connection = await sql.connect(dbConfig)
-        const query =  "SELECT id, medicine, datetime FROM Medicine";
-        const result = await connection.request().query(query);
-        return result.recordset;
-
-    }
-    catch(error){
-        console.error("Database error:", error);
-    throw error;
-    } 
-    finally {
-    if (connection) {
-      try {
-        await connection.close();
-      } catch (err) {
-        console.error("Error closing connection:", err);
-      }
-    }
-  }
-
-    
-}
-async function getDateById(id) {
+async function GetAllDates(userId) {
   let connection;
   try {
     connection = await sql.connect(dbConfig);
-    const query = "SELECT * FROM Medicine WHERE id = @id";
+    const query = "SELECT id, medicine, datetime FROM Medicine WHERE userId = @userId";
     const request = connection.request();
-    request.input("id", id);
+    request.input("userId", sql.Int, userId);
     const result = await request.query(query);
-
-    if (result.recordset.length === 0) {
-      return null; 
-    }
-
-    return result.recordset[0];
+    return result.recordset;
   } catch (error) {
     console.error("Database error:", error);
     throw error;
   } finally {
-    if (connection) {
-      try {
-        await connection.close();
-      } catch (err) {
-        console.error("Error closing connection:", err);
-      }
-    }
+    if (connection) await connection.close().catch(console.error);
   }
 }
 
-//CREATE//
-async function CreateDate(bookData) {
+async function getDateById(id, userId) {
   let connection;
   try {
     connection = await sql.connect(dbConfig);
-    const query = "INSERT INTO Medicine (medicine, datetime) VALUES (@medicine, @datetime)";
+    const query = "SELECT * FROM Medicine WHERE id = @id AND userId = @userId";
     const request = connection.request();
-    request.input("medicine", sql.VarChar, bookData.medicine);
-    request.input("datetime", sql.DateTime, bookData.datetime);
+    request.input("id", sql.Int, id);
+    request.input("userId", sql.Int, userId);
+    const result = await request.query(query);
+    return result.recordset[0] || null;
+  } catch (error) {
+    console.error("Database error:", error);
+    throw error;
+  } finally {
+    if (connection) await connection.close().catch(console.error);
+  }
+}
+
+async function CreateDate({ medicine, datetime, userId }) {
+  let connection;
+  try {
+    connection = await sql.connect(dbConfig);
+    const query = "INSERT INTO Medicine (medicine, datetime, userId) VALUES (@medicine, @datetime, @userId)";
+    const request = connection.request();
+    request.input("medicine", sql.VarChar, medicine);
+    request.input("datetime", sql.DateTime, datetime);
+    request.input("userId", sql.Int, userId);
     await request.query(query);
   } catch (error) {
     console.error("CreateDate error:", error);
     throw error;
   } finally {
-    if (connection) {
-      try {
-        await connection.close();
-      } catch (err) {
-        console.error("Error closing connection:", err);
-      }
-    }
+    if (connection) await connection.close().catch(console.error);
   }
 }
 
-
-async function updateDate(id, { medicine, datetime }) {
+async function updateDate(id, { medicine, datetime, userId }) {
   let connection;
   try {
     connection = await sql.connect(dbConfig);
     const query =
-      "UPDATE Medicine SET medicine = @medicine, datetime = @datetime WHERE id = @id";
+      "UPDATE Medicine SET medicine = @medicine, datetime = @datetime WHERE id = @id AND userId = @userId";
     const request = connection.request();
     request.input("id", sql.Int, id);
     request.input("medicine", sql.VarChar, medicine);
     request.input("datetime", sql.DateTime, datetime);
+    request.input("userId", sql.Int, userId);
     const result = await request.query(query);
-
-    if (result.rowsAffected[0] === 0) {
-      return null; 
-    }
-
-    return await getDateById(id);
+    return result.rowsAffected[0] > 0;
   } catch (error) {
     console.error("Database error:", error);
     throw error;
   } finally {
-    if (connection) {
-      try {
-        await connection.close();
-      } catch (err) {
-        console.error("Error closing connection:", err);
-      }
-    }
+    if (connection) await connection.close().catch(console.error);
   }
 }
-async function deleteDate(id) {
+
+async function deleteDate(id, userId) {
   let connection;
   try {
     connection = await sql.connect(dbConfig);
-    const query = "DELETE FROM Medicine WHERE id = @id";
+    const query = "DELETE FROM Medicine WHERE id = @id AND userId = @userId";
     const request = connection.request();
-    request.input("id", id);
+    request.input("id", sql.Int, id);
+    request.input("userId", sql.Int, userId);
     const result = await request.query(query);
-
-    if (result.rowsAffected[0] === 0) {
-      return null; 
-    }
-
-    return true; 
+    return result.rowsAffected[0] > 0;
   } catch (error) {
     console.error("Database error:", error);
     throw error;
   } finally {
-    if (connection) {
-      try {
-        await connection.close();
-      } catch (err) {
-        console.error("Error closing connection:", err);
-      }
-    }
+    if (connection) await connection.close().catch(console.error);
   }
 }
 
 module.exports = {
-    GetAllDates,
-    getDateById,
-    CreateDate,
-    updateDate,
-    deleteDate,
-
-}
+  GetAllDates,
+  getDateById,
+  CreateDate,
+  updateDate,
+  deleteDate,
+};
