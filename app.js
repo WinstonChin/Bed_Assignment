@@ -60,20 +60,6 @@ app.delete("/api/appointments/:id", validateAppointmentID, appointmentController
 app.get('/api/moods/:userId', moodController.getMoodLogs);
 app.post('/api/moods', moodController.logMood);
 
-//dailyplanner//
-app.get("/planner/:userId", plannerController.getAllPlannerEntries);
-app.get("/planner/entry/:id", validatePlannerId, plannerController.getPlannerEntryById);
-app.post("/planner", validatePlanner, plannerController.createPlannerEntry);
-app.put("/planner/entry/:id", validatePlannerId, validatePlanner, plannerController.updatePlannerEntry);
-app.delete("/planner/entry/:id", validatePlannerId, plannerController.deletePlannerEntry);
-
-
-//panicbutton//
-app.get("/panic/:userId", panicController.getEmergencies);
-app.get("/panic/alert/:id", validatePanicId, panicController.getEmergencyById);
-app.post("/panic", validatePanic, panicController.triggerEmergency);
-app.put("/panic/alert/:id", validatePanicId, validatePanic, panicController.updateEmergency);
-app.delete("/panic/alert/:id", validatePanicId, panicController.deleteEmergency);
 
 
 
