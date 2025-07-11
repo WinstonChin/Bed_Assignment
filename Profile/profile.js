@@ -21,3 +21,7 @@ function preview_image(event) {
   }
   reader.readAsDataURL(event.target.files[0]);
 }
+
+async function fetchUserFromAPI(){
+  
+}

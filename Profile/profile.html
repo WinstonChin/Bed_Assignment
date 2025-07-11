@@ -4,7 +4,7 @@
   <meta charset="UTF-8" />
   <title>Profile - SeniorCare</title>
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <style>
+   <style>
     body {
       font-family: 'Segoe UI', sans-serif;
       margin: 0;
@@ -28,6 +28,22 @@
       border-radius: 20px;
       max-width: 800px;
       box-shadow: 0 4px 12px rgba(0, 0, 0, 0.07);
+    }
+
+    .profile-pic-wrapper {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      margin-bottom: 20px;
+    }
+
+    .profile-pic-wrapper img {
+      width: 150px;
+      height: 150px;
+      border-radius: 50%;
+      object-fit: cover;
+      border: 3px solid #2a6b8f;
+      margin-bottom: 10px;
     }
 
     .content-section h2 {
@@ -70,15 +86,17 @@
 </head>
 <body>
   <div id="header"></div>
-  <div id="profile-info">
-  <div>Name: <span id="profile-name"></span></div>
-  <div>Email: <span id="profile-email"></span></div>
-  <div>
-    <img id="output_image" height="100" width="100" style="border-radius: 50%;" />
-  </div>
-  <input type="file" accept="image/*" onchange="preview_image(event)">
-</div>
-
+  <main>
+    <div class="content-section">
+      <div class="profile-pic-wrapper">
+        <img id="output_image" src="default-pfp.png" alt="Profile Picture" />
+        <input type="file" accept="image/*" onchange="preview_image(event)">
+      </div>
+      <div>Name: <span id="profile-name"></span></div>
+      <div>Email: <span id="profile-email"></span></div>
+    </div>
+  </main>
+<script src="profile.js"></script>
   <script>
     fetch('header.html')
       .then(res => res.text())
