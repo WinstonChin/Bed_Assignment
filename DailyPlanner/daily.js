@@ -27,3 +27,23 @@ async function loadMoodLogs() {
 }
 
 window.onload = loadMoodLogs;
+
+//daviam//
+const express = require("express");
+const cors = require("cors");
+require("dotenv").config();
+
+
+const plannerController = require("./controllers/plannerController");
+const {
+  validatePlanner,
+  validatePlannerId,
+} = require("./validations/plannerValidation");
+
+
+const app = express();
+const PORT = process.env.PORT || 3000;
+
+
+app.use(cors());
+app.use(express.json());

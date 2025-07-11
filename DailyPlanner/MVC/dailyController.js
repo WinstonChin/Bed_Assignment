@@ -47,3 +47,86 @@ module.exports = {
     getMoodLogs,
     logMood
 };
+
+//davian//
+const plannerModel = require("../models/plannerModel");
+
+
+// Get all entries
+async function getAllPlannerEntries(req, res) {
+  try {
+    const userId = parseInt(req.params.userId);
+    const entries = await plannerModel.getAllPlannerEntries(userId);
+    res.json(entries);
+  } catch (error) {
+    console.error("Controller error:", error);
+    res.status(500).json({ error: "Error retrieving planner entries" });
+  }
+}
+
+
+// Get one entry
+async function getPlannerEntryById(req, res) {
+  try {
+    const id = parseInt(req.params.id);
+    const entry = await plannerModel.getPlannerEntryById(id);
+    if (!entry) {
+      return res.status(404).json({ error: "Planner entry not found" });
+    }
+    res.json(entry);
+  } catch (error) {
+    console.error("Controller error:", error);
+    res.status(500).json({ error: "Error retrieving planner entry" });
+  }
+}
+
+
+// Create entry
+async function createPlannerEntry(req, res) {
+  try {
+    const newEntry = await plannerModel.createPlannerEntry(req.body);
+    res.status(201).json(newEntry);
+  } catch (error) {
+    console.error("Controller error:", error);
+    res.status(500).json({ error: "Error creating planner entry" });
+  }
+}
+
+
+// Update planner entry
+async function updatePlannerEntry(req, res) {
+  try {
+    const id = parseInt(req.params.id);
+    const updatedEntry = await plannerModel.updatePlannerEntry(id, req.body);
+    if (!updatedEntry) {
+      return res.status(404).json({ error: "Planner entry not found" });
+    }
+    res.json(updatedEntry);
+  } catch (error) {
+    console.error("Controller error:", error);
+    res.status(500).json({ error: "Error updating planner entry" });
+  }
+}
+
+
+// Delete planner entry
+async function deletePlannerEntry(req, res) {
+  try {
+    const id = parseInt(req.params.id);
+    await plannerModel.deletePlannerEntry(id);
+    res.status(200).json({ message: "Planner entry deleted successfully" });
+  } catch (error) {
+    console.error("Controller error:", error);
+    res.status(500).json({ error: "Error deleting planner entry" });
+  }
+}
+
+
+module.exports = {
+  getAllPlannerEntries,
+  getPlannerEntryById,
+  createPlannerEntry,
+  updatePlannerEntry,
+  deletePlannerEntry,
+};
+

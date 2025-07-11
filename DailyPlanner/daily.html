@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <title>Mood Tracker</title>
+  <title>Mood Tracker & Daily Planner</title>
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <style>
     body {
@@ -24,7 +24,7 @@
     .content-section {
       background-color: white;
       padding: 30px;
-      margin: 0 auto;
+      margin: 30px auto;
       border-radius: 20px;
       max-width: 800px;
       box-shadow: 0 4px 12px rgba(0, 0, 0, 0.07);
@@ -64,14 +64,14 @@
       cursor: pointer;
     }
 
-    ul#moodLogs {
+    ul {
       list-style-type: none;
       padding: 0;
       margin-top: 20px;
       text-align: left;
     }
 
-    ul#moodLogs li {
+    ul li {
       background-color: #eef6fb;
       margin-bottom: 10px;
       padding: 10px;
@@ -84,6 +84,7 @@
   <div id="header"></div>
 
   <main>
+    <!-- Mood Tracker -->
     <div class="content-section">
       <h2>Mood Tracker</h2>
 
@@ -109,10 +110,39 @@
       <h3>Logged Moods</h3>
       <ul id="moodLogs"></ul>
     </div>
+
+    <!-- Daily Planner -->
+    <div class="content-section">
+      <h2>Daily Planner</h2>
+
+      <label for="plannerUser">User ID</label>
+      <input type="number" id="plannerUser" />
+
+      <label for="activity">Activity</label>
+      <input type="text" id="activity" placeholder="e.g. Morning Walk" />
+
+      <label for="startTime">Start Time</label>
+      <input type="time" id="startTime" />
+
+      <label for="endTime">End Time</label>
+      <input type="time" id="endTime" />
+
+      <label for="status">Status</label>
+      <select id="status">
+        <option value="pending">Pending</option>
+        <option value="completed">Completed</option>
+        <option value="missed">Missed</option>
+      </select>
+
+      <button id="addPlanner">Add Activity</button>
+
+      <h3>Planned Activities</h3>
+      <ul id="plannerList"></ul>
+    </div>
   </main>
 
   <script>
-    // Load header
+    // Load shared header
     fetch('header.html')
       .then(response => response.text())
       .then(data => {
@@ -120,7 +150,7 @@
       });
   </script>
 
-  <!-- Mood Tracker Script -->
+  <!-- JS for mood tracker and planner -->
   <script src="daily.js"></script>
 </body>
 </html>
