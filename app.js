@@ -39,6 +39,16 @@ app.post("/api/meds", validateDate, medsController.createDate);
 app.put("/api/meds/:id", validateDateID, validateDate, medsController.updateDate);
 app.delete("/api/meds/:id", validateDateID, medsController.deleteDate);
 
+//Auth Meds//
+const { authenticateToken } = require('./Login/authenticate'); // 
+
+app.get("/api/meds", authenticateToken, medsController.getAllDates);
+app.get("/api/meds/:id", authenticateToken, validateDateID, medsController.getDateById);
+app.post("/api/meds", authenticateToken, validateDate, medsController.createDate);
+app.put("/api/meds/:id", authenticateToken, validateDateID, validateDate, medsController.updateDate);
+app.delete("/api/meds/:id", authenticateToken, validateDateID, medsController.deleteDate);
+
+
 //Appointment//
 app.get("/api/appointments", appointmentController.getAllAppointments);
 app.get("/api/appointments/:id", validateAppointmentID, appointmentController.getAppointmentById);
