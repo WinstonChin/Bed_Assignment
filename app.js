@@ -126,10 +126,6 @@ app.use((err, req, res, next) => {
     res.status(500).json({ error: 'Something went wrong!' });
 });
 
-app.post("/api/journal", (req, res, next) => {
-  console.log("Received journal entry:", req.body); // Debug log
-  next();
-}, journalController.createJournalEntry);
 
 // Database Connection
 async function startServer() {
