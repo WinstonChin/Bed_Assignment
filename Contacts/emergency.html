@@ -68,6 +68,30 @@
       border-radius: 10px;
       text-align: left;
     }
+
+    /* Panic Button Styling */
+    #panicButtonContainer {
+      margin-top: 30px;
+      padding: 0 20px; /* Matching the card's padding */
+      max-width: 800px; /* Ensure it matches the card's width */
+      margin-left: auto;
+      margin-right: auto;
+    }
+
+    #panicButton {
+      padding: 10px 20px;
+      background: red;
+      color: white;
+      border: none;
+      border-radius: 5px;
+      width: 100%; /* Same width as the card's inner content */
+      font-size: 18px;
+      cursor: pointer;
+    }
+
+    #panicButton:hover {
+      background: darkred;
+    }
   </style>
 </head>
 <body>
@@ -97,6 +121,11 @@
       <button onclick="submitEmergencyInfo()">Save Info</button>
 
       <div class="info-display" id="infoDisplay"></div>
+    </div>
+
+    <!-- Panic Button Container -->
+    <div id="panicButtonContainer">
+      <button id="panicButton" onclick="triggerPanicAlert()">Panic Button</button>
     </div>
   </main>
 
@@ -139,6 +168,12 @@
         <strong>Medical Conditions:</strong> ${info.MedicalConditions || 'N/A'}<br>
         <strong>Emergency Contact:</strong> ${info.EmergencyContactName || 'N/A'} (${info.EmergencyContactPhone || 'N/A'})
       `;
+    }
+
+    // Function to handle panic button click
+    function triggerPanicAlert() {
+      alert("Panic Alert Triggered! Help is on the way.");
+      // Additional functionality to handle panic alert can be added here (e.g., API call)
     }
 
     window.onload = loadEmergencyInfo;

@@ -36,4 +36,29 @@ const loadActivities = async () => {
   `).join('');
 };
 
+async function submitDailyPlanner() {
+  const data = {
+    userId: 1,  // Example userId, adjust this based on your authentication logic
+    startTime: document.getElementById('startTime').value,
+    endTime: document.getElementById('endTime').value,
+    activity: document.getElementById('activity').value,
+  };
+
+  const response = await fetch('/api/dailyPlanner', {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+    },
+    body: JSON.stringify(data),
+  });
+
+  const result = await response.json();
+  if (response.ok) {
+    alert('Activity added successfully');
+  } else {
+    alert('Error: ' + result.error);
+  }
+}
+
+
 loadActivities();
