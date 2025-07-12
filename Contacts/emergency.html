@@ -3,11 +3,16 @@
 <head>
   <meta charset="UTF-8">
   <title>Emergency Info Card</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <style>
     body {
       font-family: Arial, sans-serif;
       background: #f5faff;
-      padding: 20px;
+      padding: 0;
+      margin: 0;
+    }
+    #header {
+      margin-bottom: 30px;
     }
     .container {
       max-width: 700px;
@@ -17,8 +22,15 @@
       border-radius: 10px;
       box-shadow: 0 0 10px #ccc;
     }
-    h2 { text-align: center; color: #2a6b8f; }
-    label { display: block; margin-top: 15px; font-weight: bold; }
+    h2 {
+      text-align: center;
+      color: #2a6b8f;
+    }
+    label {
+      display: block;
+      margin-top: 15px;
+      font-weight: bold;
+    }
     input, textarea {
       width: 100%;
       padding: 10px;
@@ -33,6 +45,7 @@
       color: #fff;
       border: none;
       border-radius: 5px;
+      cursor: pointer;
     }
     .info {
       background: #e6f7ff;
@@ -43,11 +56,15 @@
   </style>
 </head>
 <body>
+
+  <!-- Load the navigation header -->
+  <div id="header"></div>
+
   <div class="container">
     <h2>Emergency Info Card</h2>
 
     <label>Blood Type</label>
-    <input type="text" id="bloodType">
+    <input type="text" id="bloodType" />
 
     <label>Allergies</label>
     <textarea id="allergies" rows="2"></textarea>
@@ -56,53 +73,26 @@
     <textarea id="medicalConditions" rows="2"></textarea>
 
     <label>Emergency Contact Name</label>
-    <input type="text" id="emergencyContactName">
+    <input type="text" id="emergencyContactName" />
 
     <label>Emergency Contact Phone</label>
-    <input type="text" id="emergencyContactPhone">
+    <input type="text" id="emergencyContactPhone" />
 
     <button onclick="saveEmergencyInfo()">Save Info</button>
 
     <div class="info" id="infoDisplay"></div>
   </div>
 
+  <!-- Load emergency info script -->
+  <script src="emergency.js"></script>
+
+  <!-- Inject header navigation -->
   <script>
-    const userId = 1; // Replace with actual user ID if using auth
-
-    async function saveEmergencyInfo() {
-      const data = {
-        userId,
-        bloodType: document.getElementById('bloodType').value,
-        allergies: document.getElementById('allergies').value,
-        medicalConditions: document.getElementById('medicalConditions').value,
-        emergencyContactName: document.getElementById('emergencyContactName').value,
-        emergencyContactPhone: document.getElementById('emergencyContactPhone').value
-      };
-
-      const res = await fetch('/api/emergency-info', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(data)
+    fetch('header.html')
+      .then(response => response.text())
+      .then(data => {
+        document.getElementById('header').innerHTML = data;
       });
-
-      const result = await res.json();
-      alert(result.message);
-      loadEmergencyInfo();
-    }
-
-    async function loadEmergencyInfo() {
-      const res = await fetch(`/api/emergency-info/${userId}`);
-      const info = await res.json();
-
-      document.getElementById('infoDisplay').innerHTML = `
-        <strong>Blood Type:</strong> ${info.BloodType || 'N/A'}<br>
-        <strong>Allergies:</strong> ${info.Allergies || 'N/A'}<br>
-        <strong>Medical Conditions:</strong> ${info.MedicalConditions || 'N/A'}<br>
-        <strong>Emergency Contact:</strong> ${info.EmergencyContactName || 'N/A'} (${info.EmergencyContactPhone || 'N/A'})
-      `;
-    }
-
-    window.onload = loadEmergencyInfo;
   </script>
 </body>
 </html>
