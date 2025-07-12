@@ -1,140 +1,121 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
+  <meta charset="UTF-8" />
   <title>Emergency Info Card</title>
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <style>
     body {
       font-family: Arial, sans-serif;
       background: #f5faff;
-      padding: 0;
       margin: 0;
+      padding: 0;
     }
+
     #header {
+      background: #b3e0ff;
+      padding: 10px;
+    }
+
+    main {
+      padding: 30px 20px;
+      text-align: center;
+    }
+
+    .card {
+      background: white;
+      padding: 30px;
+      margin: 0 auto;
+      border-radius: 20px;
+      max-width: 800px;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.07);
+    }
+
+    .card h2 {
+      color: #2a6b8f;
       margin-bottom: 20px;
     }
-    .container {
-      max-width: 700px;
-      margin: 40px auto;
-      background: #fff;
-      padding: 30px;
-      border-radius: 10px;
-      box-shadow: 0 0 10px #ccc;
-    }
-    h2 {
-      text-align: center;
-      color: #2a6b8f;
-    }
+
     label {
-      display: block;
-      margin-top: 15px;
       font-weight: bold;
+      display: block;
+      margin-top: 10px;
+      text-align: left;
     }
+
     input, textarea {
       width: 100%;
       padding: 10px;
       margin-top: 5px;
-      border: 1px solid #ddd;
+      border: 1px solid #ccc;
       border-radius: 5px;
     }
+
     button {
       margin-top: 20px;
       padding: 10px 20px;
       background: #2a6b8f;
-      color: #fff;
+      color: white;
       border: none;
       border-radius: 5px;
       cursor: pointer;
     }
-    .info {
-      background: #e6f7ff;
+
+    .info-display {
       margin-top: 30px;
       padding: 15px;
-      border-radius: 8px;
-    }
-    nav {
-      background-color: #b3e5fc;
-      padding: 10px 0;
-      display: flex;
-      justify-content: center;
-      gap: 20px;
-      border-bottom: 2px solid #90caf9;
-    }
-    nav a {
-      text-decoration: none;
-      color: #004d67;
-      font-weight: bold;
-      background: #e1f5fe;
-      padding: 8px 14px;
-      border-radius: 20px;
-      transition: background 0.3s;
-    }
-    nav a:hover {
-      background: #81d4fa;
-    }
-    .logo {
-      font-size: 24px;
-      font-weight: bold;
-      padding: 10px;
-      display: inline-block;
-      margin-left: 10px;
-      color: #004d67;
+      background: #e6f7ff;
+      border-radius: 10px;
+      text-align: left;
     }
   </style>
 </head>
 <body>
 
-  <!-- Header -->
-  <div style="background-color: #e1f5fe; display: flex; justify-content: space-between; align-items: center; padding: 10px 20px;">
-    <div class="logo">👴 SeniorCare</div>
-    <nav>
-      <a href="index.html">🏠 Home</a>
-      <a href="meds.html">❤️ Meds</a>
-      <a href="appointment.html">💬 Appointments</a>
-      <a href="daily.html">📅 Daily</a>
-      <a href="emergency.html">🚨 Emergency</a>
-      <a href="journal.html">🧾 Journal</a>
-      <a href="profile.html">👤 Profile</a>
-    </nav>
-  </div>
+  <!-- Load Header -->
+  <div id="header"></div>
 
-  <!-- Form -->
-  <div class="container">
-    <h2>Emergency Info Card</h2>
-    <form onsubmit="event.preventDefault(); saveEmergencyInfo();">
+  <main>
+    <div class="card">
+      <h2>Emergency Info Card</h2>
+
       <label>Blood Type:</label>
-      <input type="text" id="bloodType" required>
+      <input type="text" id="bloodType" />
 
       <label>Allergies:</label>
-      <textarea id="allergies" rows="2"></textarea>
+      <textarea id="allergies"></textarea>
 
       <label>Medical Conditions:</label>
-      <textarea id="medicalConditions" rows="2"></textarea>
+      <textarea id="medicalConditions"></textarea>
 
       <label>Emergency Contact Name:</label>
-      <input type="text" id="emergencyContactName" required>
+      <input type="text" id="emergencyContactName" />
 
       <label>Emergency Contact Phone:</label>
-      <input type="text" id="emergencyContactPhone" required>
+      <input type="text" id="emergencyContactPhone" />
 
-      <button type="submit">Save Info</button>
-    </form>
+      <button onclick="submitEmergencyInfo()">Save Info</button>
 
-    <div class="info" id="infoDisplay"></div>
-  </div>
+      <div class="info-display" id="infoDisplay"></div>
+    </div>
+  </main>
 
   <script>
-    const userId = 1; // replace with real login ID if applicable
+    // Load reusable header
+    fetch('header.html')
+      .then(res => res.text())
+      .then(html => document.getElementById('header').innerHTML = html);
 
-    async function saveEmergencyInfo() {
+    const userId = 1; // Replace with real user ID if needed
+
+    async function submitEmergencyInfo() {
       const data = {
         userId,
-        bloodType: document.getElementById("bloodType").value,
-        allergies: document.getElementById("allergies").value,
-        medicalConditions: document.getElementById("medicalConditions").value,
-        emergencyContactName: document.getElementById("emergencyContactName").value,
-        emergencyContactPhone: document.getElementById("emergencyContactPhone").value
+        bloodType: document.getElementById('bloodType').value,
+        allergies: document.getElementById('allergies').value,
+        medicalConditions: document.getElementById('medicalConditions').value,
+        emergencyContactName: document.getElementById('emergencyContactName').value,
+        emergencyContactPhone: document.getElementById('emergencyContactPhone').value
       };
 
       const res = await fetch('/api/emergency-info', {
@@ -152,13 +133,7 @@
       const res = await fetch(`/api/emergency-info/${userId}`);
       const info = await res.json();
 
-      document.getElementById('bloodType').value = info.BloodType || '';
-      document.getElementById('allergies').value = info.Allergies || '';
-      document.getElementById('medicalConditions').value = info.MedicalConditions || '';
-      document.getElementById('emergencyContactName').value = info.EmergencyContactName || '';
-      document.getElementById('emergencyContactPhone').value = info.EmergencyContactPhone || '';
-
-      document.getElementById("infoDisplay").innerHTML = `
+      document.getElementById('infoDisplay').innerHTML = `
         <strong>Blood Type:</strong> ${info.BloodType || 'N/A'}<br>
         <strong>Allergies:</strong> ${info.Allergies || 'N/A'}<br>
         <strong>Medical Conditions:</strong> ${info.MedicalConditions || 'N/A'}<br>
@@ -168,6 +143,5 @@
 
     window.onload = loadEmergencyInfo;
   </script>
-
 </body>
 </html>
