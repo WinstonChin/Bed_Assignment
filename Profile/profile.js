@@ -3,8 +3,8 @@ const nameEl = document.getElementById('profile-name');
 const emailEl = document.getElementById('profile-email');
 const profileImg = document.getElementById('output_image');
 
-const userName = localStorage.getItem("userName");
-const userEmail = localStorage.getItem("userEmail");
+const userName = localStorage.getItem("name");
+const userEmail = localStorage.getItem("email");
 const userPic = localStorage.getItem("userProfilePic");
 
 nameEl.textContent = userName || "Not set";
