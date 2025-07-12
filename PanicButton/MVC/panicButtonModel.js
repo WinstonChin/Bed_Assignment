@@ -1,22 +1,101 @@
-// This file would define the schema for the Panic Button emergency records
-const sql = require('mssql');
-const db = require('../../dbConfig');
+const sql = require("mssql");
+const dbConfig = require("../../dbConfig");
 
-const createTable = async () => {
-  const pool = await sql.connect(db);
-  await pool.request().query(`
-    IF NOT EXISTS (SELECT * FROM sysobjects WHERE name = 'Emergencies' AND xtype = 'U')
-    CREATE TABLE Emergencies (
-      EmergencyId INT IDENTITY(1,1) PRIMARY KEY,
-      UserId INT,
-      Name NVARCHAR(255),
-      Location NVARCHAR(255),
-      Status NVARCHAR(50) DEFAULT 'Ongoing',
-      Timestamp DATETIME DEFAULT GETDATE()
-    )
-  `);
-};
+async function GetAllEmergencies(userId) {
+  let connection;
+  try {
+    connection = await sql.connect(dbConfig);
+    const query = "SELECT * FROM Emergencies WHERE userId = @userId";
+    const request = connection.request();
+    request.input("userId", sql.Int, userId);
+    const result = await request.query(query);
+    return result.recordset;
+  } catch (error) {
+    console.error("Database error:", error);
+    throw error;
+  } finally {
+    if (connection) await connection.close().catch(console.error);
+  }
+}
+
+async function getEmergencyById(id, userId) {
+  let connection;
+  try {
+    connection = await sql.connect(dbConfig);
+    const query = "SELECT * FROM Emergencies WHERE EmergencyId = @id AND userId = @userId";
+    const request = connection.request();
+    request.input("id", sql.Int, id);
+    request.input("userId", sql.Int, userId);
+    const result = await request.query(query);
+    return result.recordset[0] || null;
+  } catch (error) {
+    console.error("Database error:", error);
+    throw error;
+  } finally {
+    if (connection) await connection.close().catch(console.error);
+  }
+}
+
+async function CreateEmergency({ userId, name, location }) {
+  let connection;
+  try {
+    connection = await sql.connect(dbConfig);
+    const query = "INSERT INTO Emergencies (userId, Name, Location, Status) VALUES (@userId, @name, @location, 'Ongoing')";
+    const request = connection.request();
+    request.input("userId", sql.Int, userId);
+    request.input("name", sql.NVarChar, name);
+    request.input("location", sql.NVarChar, location);
+    await request.query(query);
+  } catch (error) {
+    console.error("CreateEmergency error:", error);
+    throw error;
+  } finally {
+    if (connection) await connection.close().catch(console.error);
+  }
+}
+
+async function updateEmergency(id, { userId, status }) {
+  let connection;
+  try {
+    connection = await sql.connect(dbConfig);
+    const query = "UPDATE Emergencies SET Status = @status WHERE EmergencyId = @id AND userId = @userId";
+    const request = connection.request();
+    request.input("id", sql.Int, id);
+    request.input("userId", sql.Int, userId);
+    request.input("status", sql.NVarChar, status);
+    const result = await request.query(query);
+    return result.rowsAffected[0] > 0;
+  } catch (error) {
+    console.error("Database error:", error);
+    throw error;
+  } finally {
+    if (connection) await connection.close().catch(console.error);
+  }
+}
+
+async function deleteEmergency(id, userId) {
+  let connection;
+  try {
+    connection = await sql.connect(dbConfig);
+    const query = "DELETE FROM Emergencies WHERE EmergencyId = @id AND userId = @userId";
+    const request = connection.request();
+    request.input("id", sql.Int, id);
+    request.input("userId", sql.Int, userId);
+    const result = await request.query(query);
+    return result.rowsAffected[0] > 0;
+  } catch (error) {
+    console.error("Database error:", error);
+    throw error;
+  } finally {
+    if (connection) await connection.close().catch(console.error);
+  }
+}
 
 module.exports = {
-  createTable,
+  GetAllEmergencies,
+  getEmergencyById,
+  CreateEmergency,
+  updateEmergency,
+  deleteEmergency,
 };
+

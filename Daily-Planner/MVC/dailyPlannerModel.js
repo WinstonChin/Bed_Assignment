@@ -1,22 +1,104 @@
-// This file would define the schema for activities in the Daily Planner
-const sql = require('mssql');
-const db = require('../../dbConfig');
+const sql = require("mssql");
+const dbConfig = require("../../dbConfig");
 
-const createTable = async () => {
-  const pool = await sql.connect(db);
-  await pool.request().query(`
-    IF NOT EXISTS (SELECT * FROM sysobjects WHERE name = 'DailyPlanner' AND xtype = 'U')
-    CREATE TABLE DailyPlanner (
-      ActivityId INT IDENTITY(1,1) PRIMARY KEY,
-      UserId INT,
-      StartTime NVARCHAR(255),
-      EndTime NVARCHAR(255),
-      Activity NVARCHAR(255),
-      Status NVARCHAR(50) DEFAULT 'Pending'
-    )
-  `);
-};
+async function GetAllActivities(userId) {
+  let connection;
+  try {
+    connection = await sql.connect(dbConfig);
+    const query = "SELECT * FROM DailyPlanner WHERE userId = @userId";
+    const request = connection.request();
+    request.input("userId", sql.Int, userId);
+    const result = await request.query(query);
+    return result.recordset;
+  } catch (error) {
+    console.error("Database error:", error);
+    throw error;
+  } finally {
+    if (connection) await connection.close().catch(console.error);
+  }
+}
+
+async function getActivityById(id, userId) {
+  let connection;
+  try {
+    connection = await sql.connect(dbConfig);
+    const query = "SELECT * FROM DailyPlanner WHERE ActivityId = @id AND userId = @userId";
+    const request = connection.request();
+    request.input("id", sql.Int, id);
+    request.input("userId", sql.Int, userId);
+    const result = await request.query(query);
+    return result.recordset[0] || null;
+  } catch (error) {
+    console.error("Database error:", error);
+    throw error;
+  } finally {
+    if (connection) await connection.close().catch(console.error);
+  }
+}
+
+async function CreateActivity({ userId, startTime, endTime, activity }) {
+  let connection;
+  try {
+    connection = await sql.connect(dbConfig);
+    const query = "INSERT INTO DailyPlanner (userId, StartTime, EndTime, Activity) VALUES (@userId, @startTime, @endTime, @activity)";
+    const request = connection.request();
+    request.input("userId", sql.Int, userId);
+    request.input("startTime", sql.NVarChar, startTime);
+    request.input("endTime", sql.NVarChar, endTime);
+    request.input("activity", sql.NVarChar, activity);
+    await request.query(query);
+  } catch (error) {
+    console.error("CreateActivity error:", error);
+    throw error;
+  } finally {
+    if (connection) await connection.close().catch(console.error);
+  }
+}
+
+async function updateActivity(id, { userId, startTime, endTime, activity }) {
+  let connection;
+  try {
+    connection = await sql.connect(dbConfig);
+    const query =
+      "UPDATE DailyPlanner SET StartTime = @startTime, EndTime = @endTime, Activity = @activity WHERE ActivityId = @id AND userId = @userId";
+    const request = connection.request();
+    request.input("id", sql.Int, id);
+    request.input("userId", sql.Int, userId);
+    request.input("startTime", sql.NVarChar, startTime);
+    request.input("endTime", sql.NVarChar, endTime);
+    request.input("activity", sql.NVarChar, activity);
+    const result = await request.query(query);
+    return result.rowsAffected[0] > 0;
+  } catch (error) {
+    console.error("Database error:", error);
+    throw error;
+  } finally {
+    if (connection) await connection.close().catch(console.error);
+  }
+}
+
+async function deleteActivity(id, userId) {
+  let connection;
+  try {
+    connection = await sql.connect(dbConfig);
+    const query = "DELETE FROM DailyPlanner WHERE ActivityId = @id AND userId = @userId";
+    const request = connection.request();
+    request.input("id", sql.Int, id);
+    request.input("userId", sql.Int, userId);
+    const result = await request.query(query);
+    return result.rowsAffected[0] > 0;
+  } catch (error) {
+    console.error("Database error:", error);
+    throw error;
+  } finally {
+    if (connection) await connection.close().catch(console.error);
+  }
+}
 
 module.exports = {
-  createTable,
+  GetAllActivities,
+  getActivityById,
+  CreateActivity,
+  updateActivity,
+  deleteActivity,
 };
