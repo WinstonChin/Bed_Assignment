@@ -67,16 +67,22 @@ app.get('/api/emergency-info/:userId', emergencyController.getEmergencyInfo);
 app.post('/api/emergency-info', validateEmergencyInfo, emergencyController.upsertEmergencyInfo);
 
 //davian//
-const dailyPlannerController = require('./Daily-Planner/MVC/dailyPlannerController');
+const dailyPlannerController = require('./Daily-Planner/MVC/dailyPlannerController'); 
 const panicButtonController = require('./PanicButton/MVC/panicButtonController');
 
 // Daily Planner Routes
-app.get("/api/dailyPlanner/:userId", dailyPlannerController.getAllActivities);
-app.post("/api/dailyPlanner", dailyPlannerController.createActivity);
-app.put("/api/dailyPlanner/status", dailyPlannerController.updateActivityStatus);
+app.get("/api/dailyPlanner/:userId", authenticate, dailyPlannerController.getAllActivities);
+app.get("/api/dailyPlanner/:userId/:id", authenticate, dailyPlannerController.getActivityById);
+app.post("/api/dailyPlanner", authenticate, dailyPlannerController.createActivity);
+app.put("/api/dailyPlanner/:id", authenticate, dailyPlannerController.updateActivity);
+app.delete("/api/dailyPlanner/:id", authenticate, dailyPlannerController.deleteActivity);
 
-// Panic Button Route
-app.post("/api/panicButton", panicButtonController.triggerPanicButton);
+// Panic Button Routes
+app.get("/api/panicButton/:userId", authenticate, panicButtonController.getAllEmergencies);
+app.get("/api/panicButton/:userId/:id", authenticate, panicButtonController.getEmergencyById);
+app.post("/api/panicButton", authenticate, panicButtonController.createEmergency);
+app.put("/api/panicButton/:id", authenticate, panicButtonController.updateEmergency);
+app.delete("/api/panicButton/:id", authenticate, panicButtonController.deleteEmergency);
 
 
 
