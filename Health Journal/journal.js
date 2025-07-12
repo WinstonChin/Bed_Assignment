@@ -13,40 +13,84 @@ document.addEventListener('DOMContentLoaded', loadEntries);
 
 form.addEventListener('submit', async (e) => {
   e.preventDefault();
-
-  const entry = {
-    entry_date: dateInput.value,
-    pain_level: parseInt(levelInput.value),
-    pain_location: locationInput.value,
-    symptoms: symptomsInput.value,
-    notes: notesInput.value
-  };
-
-  const id = entryIdInput.value;
-
+  
   try {
-    if (id) {
-      // Update
-      await fetch(`${API_URL}/${id}`, {
-        method: 'PUT',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(entry)
-      });
-    } else {
-      // Create
-      await fetch(API_URL, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(entry)
-      });
+    // Get input values
+    const entryDate = dateInput.value;
+    const painLevel = levelInput.value;
+    const painLocation = locationInput.value;
+    const symptoms = symptomsInput.value;
+    const notes = notesInput.value;
+
+    // 1. Check required fields
+    if (!entryDate || !painLevel || !symptoms || !notes) {
+      throw new Error('Please fill all required fields');
     }
 
+    // 2. Validate pain level (must be number 0-10)
+    const painLevelNum = parseInt(painLevel);
+    if (isNaN(painLevelNum)) {
+      throw new Error('Pain level must be a number');
+    }
+    if (painLevelNum < 0 || painLevelNum > 10) {
+      throw new Error('Pain level must be between 0-10');
+    }
+
+    // 3. Validate text fields don't contain only numbers
+    const numberRegex = /^[0-9]+$/;
+    const containsLettersRegex = /[a-zA-Z]/; // At least one letter
+    
+    if (painLocation && numberRegex.test(painLocation)) {
+      throw new Error('Pain location cannot be just numbers');
+    }
+    
+    if (!containsLettersRegex.test(symptoms)) {
+      throw new Error('Symptoms must contain text (not just numbers/symbols)');
+    }
+    
+    if (!containsLettersRegex.test(notes)) {
+      throw new Error('Notes must contain text (not just numbers/symbols)');
+    }
+
+    // Prepare entry data
+    const entry = {
+      entry_date: entryDate,
+      pain_level: painLevelNum, // Use the validated number
+      pain_location: painLocation || null, // Convert empty string to null
+      symptoms: symptoms,
+      notes: notes
+    };
+
+    // Determine if we're updating or creating
+    const id = entryIdInput.value;
+    const method = id ? 'PUT' : 'POST';
+    const url = id ? `${API_URL}/${id}` : API_URL;
+
+    // Send to server
+    const response = await fetch(url, {
+      method,
+      headers: { 
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify(entry),
+      credentials: 'include'
+    });
+
+    if (!response.ok) {
+      const errorData = await response.json().catch(() => ({}));
+      throw new Error(errorData.message || 'Failed to save entry');
+    }
+
+    // Reset form on success
     form.reset();
+    dateInput.valueAsDate = new Date(); // Reset to today's date
     entryIdInput.value = '';
-    loadEntries();
+    await loadEntries();
+    alert('Entry saved successfully!');
+    
   } catch (err) {
-    alert('Failed to save entry.');
-    console.error(err);
+    console.error('Save error:', err);
+    alert(err.message || 'Failed to save entry');
   }
 });
 
