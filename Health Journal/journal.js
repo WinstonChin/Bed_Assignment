@@ -53,13 +53,20 @@ form.addEventListener('submit', async (e) => {
 async function loadEntries() {
   journalList.innerHTML = '';
   try {
-    const res = await fetch(API_URL);
-    const entries = await res.json();
+    const res = await fetch('/health-journal');
+    const data = await res.json();
 
-    entries.forEach((entry) => {
+    console.log('API response:', data); // 🔍 See what is returned
+
+    if (!Array.isArray(data)) {
+      throw new Error('Expected an array of entries but got: ' + JSON.stringify(data));
+    }
+
+    data.forEach((entry) => {
       const li = document.createElement('li');
       li.innerHTML = `
-        <strong>${entry.entry_date}</strong> | Pain: ${entry.pain_level}/10 | Location: ${entry.pain_location}<br />
+        <strong>${new Date(entry.entry_date).toLocaleDateString()}</strong>
+| Pain: ${entry.pain_level}/10 | Location: ${entry.pain_location}<br />
         <em>Symptoms:</em> ${entry.symptoms}<br />
         <em>Notes:</em> ${entry.notes}<br />
         <button onclick="editEntry(${entry.id})">Edit</button>
@@ -69,10 +76,11 @@ async function loadEntries() {
       journalList.appendChild(li);
     });
   } catch (err) {
-    alert('Failed to load entries.');
-    console.error(err);
+    console.error('Failed to load entries:', err);
+    journalList.innerHTML = '<li style="color:red;">Failed to load entries</li>';
   }
 }
+
 
 async function deleteEntry(id) {
   if (!confirm('Delete this entry?')) return;
