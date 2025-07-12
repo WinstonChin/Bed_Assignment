@@ -94,6 +94,8 @@ app.use(express.static(path.join(__dirname, 'Health Journal')));
 app.use(express.static(path.join(__dirname, 'Login')));
 app.use(express.static(path.join(__dirname, 'SignUp')));
 app.use(express.static(path.join(__dirname, 'Journal')));
+app.use(express.static(path.join(__dirname, 'DailyPlanner')));
+app.use(express.static(path.join(__dirname, 'Contacts')));
 
 
 // Routes
