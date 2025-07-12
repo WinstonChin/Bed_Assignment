@@ -19,7 +19,8 @@ function getDateKey(date) {
 
 function formatDateTimeLocal(datetime) {
   const dt = new Date(datetime);
-  return dt.toISOString().slice(0, 16); // YYYY-MM-DDTHH:mm
+  const local = new Date(dt.getTime() - dt.getTimezoneOffset() * 60000);
+  return local.toISOString().slice(0, 16); // Keep local time
 }
 
 // Fetch medicine reminders from API
