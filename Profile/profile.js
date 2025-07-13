@@ -30,7 +30,7 @@ function preview_image(event) {
   reader.readAsDataURL(event.target.files[0]);
 }
 
-// 3. Update user info - incomplete
+// 3. Update user info -
 async function updateUser(updateData) {
   try {
     const res = await fetch(`http://localhost:3000/api/users/${userId}`, {

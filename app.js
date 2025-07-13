@@ -84,6 +84,7 @@ app.post("/api/panicButton", authenticate, panicButtonController.createEmergency
 app.put("/api/panicButton/:id", authenticate, panicButtonController.updateEmergency);
 app.delete("/api/panicButton/:id", authenticate, panicButtonController.deleteEmergency);
 
+//Profile//
 const loginController = require('./Login/MVC/loginController');
 
 app.get('/api/users/:id', loginController.getUserById);

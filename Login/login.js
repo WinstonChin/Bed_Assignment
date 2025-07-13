@@ -19,8 +19,10 @@ async function login(e) {
     if (res.ok) {
       alert("Login successful!");
       
+      localStorage.setItem('userId', data.userId);   // 👈 Save userId
+      localStorage.setItem('name', data.name);       // 👈 Optional: save name
+      localStorage.setItem('email', data.email);     // 👈 Optional: save email
       localStorage.setItem('token', data.token);
-      localStorage.setItem("userId", data.userId);
 
       window.location.href = 'home.html';
     } else {
