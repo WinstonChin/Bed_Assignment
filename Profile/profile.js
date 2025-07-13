@@ -3,6 +3,8 @@ const emailEl = document.getElementById('profile-email');
 const profileImg = document.getElementById('output_image');
 const userId = localStorage.getItem("userId");
 
+window.onload = fetchUser;
+
 // 1. Load user info from DB
 async function fetchUser() {
   try {
