@@ -84,7 +84,11 @@ app.post("/api/panicButton", authenticate, panicButtonController.createEmergency
 app.put("/api/panicButton/:id", authenticate, panicButtonController.updateEmergency);
 app.delete("/api/panicButton/:id", authenticate, panicButtonController.deleteEmergency);
 
+const loginController = require('./Login/MVC/loginController');
 
+app.get('/api/users/:id', loginController.getUserById);
+app.put('/api/users/:id', loginController.updateUser);
+app.delete('/api/users/:id', loginController.deleteUser);
 
 
 // Serve all frontend folders as static
