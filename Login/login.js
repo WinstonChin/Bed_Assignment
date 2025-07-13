@@ -19,9 +19,10 @@ async function login(e) {
     if (res.ok) {
       alert("Login successful!");
       
-      localStorage.setItem('userId', data.userId);   // 👈 Save userId
-      localStorage.setItem('name', data.name);       // 👈 Optional: save name
-      localStorage.setItem('email', data.email);     // 👈 Optional: save email
+      localStorage.setItem("userId", data.userId);
+localStorage.setItem("name", data.name);
+localStorage.setItem("email", data.email);
+localStorage.setItem("userProfilePic", data.profilePicUrl || "");
       localStorage.setItem('token', data.token);
 
       window.location.href = 'home.html';

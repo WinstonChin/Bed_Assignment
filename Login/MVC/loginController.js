@@ -16,7 +16,14 @@ async function loginUser(req, res) {
       process.env.JWT_SECRET
     );
 
-    res.status(200).json({ message: "Login successful", token, userId: user.id });
+    res.status(200).json({
+  message: "Login successful",
+  token,
+  userId: user.id,
+  name: user.name,
+  email: user.email,
+  profilePicUrl: user.profilePicUrl 
+});
   } catch (err) {
     console.error("Login error:", err);
     res.status(500).json({ error: "Login failed" });
