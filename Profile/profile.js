@@ -5,11 +5,6 @@ const emailInput = document.getElementById('profile-email-input')
 const profileImg = document.getElementById('output_image');
 const userId = localStorage.getItem("userId");
 
-//edit buttons//
-const editBtn = document.getElementById('edit-btn');
-const saveBtn = document.getElementById('save-btn');
-const cancelBtn = document.getElementById('cancel-btn');
-
 
 window.onload = fetchUser;
 
