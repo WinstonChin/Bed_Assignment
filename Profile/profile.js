@@ -18,14 +18,24 @@ async function fetchUser() {
   try {
     const res = await fetch(`http://localhost:3000/api/users/${userId}`);
     const user = await res.json();
-
-    nameEl.textContent = user.name || "Not set";
-    emailEl.textContent = user.email || "Not set";
+    nameInput.value = user.name || "";
+    emailInput.value = user.email || "";
     profileImg.src = user.profilePicUrl || "https://www.pngmart.com/files/23/Profile-PNG-Photo.png";
   } catch (err) {
     console.error("Failed to fetch user:", err);
   }
-  
+}
+
+async function saveProfile() {
+  const updatedName = nameInput.value.trim();
+  const updatedEmail = emailInput.value.trim();
+
+  try {
+    await updateUser({ name: updatedName, email: updatedEmail });
+    alert("Profile updated!");
+  } catch (err) {
+    console.error("Failed to save profile:", err);
+  }
 }
 
 // 2. Upload and update profile picture
