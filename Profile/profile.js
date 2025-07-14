@@ -13,7 +13,7 @@ async function fetchUser() {
 
     nameEl.textContent = user.name || "Not set";
     emailEl.textContent = user.email || "Not set";
-    profileImg.src = user.profilePicUrl || "default-pfp.png";
+    profileImg.src = user.profilePicUrl || "https://www.pngmart.com/files/23/Profile-PNG-Photo.png";
   } catch (err) {
     console.error("Failed to fetch user:", err);
   }
@@ -45,7 +45,10 @@ async function updateUser(updateData) {
     console.log("User updated");
   } catch (err) {
     console.error("Update error:", err);
+    
+
   }
+  
 }
 
 // 4. Delete user
