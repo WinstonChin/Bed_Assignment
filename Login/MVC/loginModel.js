@@ -15,14 +15,17 @@ async function getUserById(id) {
 }
 
 async function updateUser(id, name, email, profilePicUrl) {
-  await sql.query`
-    UPDATE Users SET
-      name = ${name},
-      email = ${email},
-      profilePicUrl = ${profilePicUrl}
-    WHERE id = ${id}
-  `;
+  let updates = [];
+  if (name !== undefined) updates.push(`name = '${name}'`);
+  if (email !== undefined) updates.push(`email = '${email}'`);
+  if (profilePicUrl !== undefined) updates.push(`profilePicUrl = '${profilePicUrl}'`);
+
+  if (updates.length === 0) return; 
+
+  const query = `UPDATE Users SET ${updates.join(", ")} WHERE id = ${id}`;
+  await sql.query(query);
 }
+
 
 async function deleteUser(id) {
   await sql.query`

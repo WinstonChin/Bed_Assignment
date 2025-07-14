@@ -17,20 +17,41 @@ async function fetchUser() {
   } catch (err) {
     console.error("Failed to fetch user:", err);
   }
+  
 }
 
 // 2. Upload and update profile picture
-function preview_image(event) {
-  const reader = new FileReader();
-  reader.onload = async function () {
-    const result = reader.result;
-    profileImg.src = result;
-
-    // Save to DB
-    await updateUser({ profilePicUrl: result });
-  };
-  reader.readAsDataURL(event.target.files[0]);
+function showProfilePicInput() {
+  document.getElementById('profilePicInputWrapper').style.display = 'block';
 }
+
+// Save profile pic URL
+async function saveProfilePicUrl() {
+  const picUrl = document.getElementById('profilePicUrlInput').value.trim();
+  if (!picUrl) return alert("Please enter a valid URL");
+
+  profileImg.src = picUrl; 
+
+  try {
+    await fetch(`http://localhost:3000/api/users/${userId}`, {
+      method: "PUT",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ profilePicUrl: picUrl })
+    });
+    alert("Profile picture updated!");
+    document.getElementById('profilePicInputWrapper').style.display = 'none';
+    document.getElementById('profilePicUrlInput').value = '';
+  } catch (err) {
+    console.error("Error saving profile pic:", err);
+  }
+  
+}
+
+function toggleEditPic() {
+  const section = document.getElementById('editProfilePicSection');
+  section.style.display = section.style.display === 'none' ? 'block' : 'none';
+}
+
 
 // 3. Update user info -
 async function updateUser(updateData) {
