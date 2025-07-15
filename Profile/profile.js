@@ -4,6 +4,13 @@ const nameInput = document.getElementById('profile-name-input')
 const emailInput = document.getElementById('profile-email-input')
 const profileImg = document.getElementById('output_image');
 const userId = localStorage.getItem("userId");
+const token = localStorage.getItem('token');
+
+if (!token) {
+  alert("Please log in first");
+  window.location.href = "login.html";
+}
+
 
 
 window.onload = fetchUser;
@@ -103,6 +110,14 @@ async function deleteUser() {
     console.error("Delete error:", err);
   }
 }
+
+//clears token from ls and logs out//
+function logout() {
+  localStorage.clear();  
+  alert('Logging out');
+  window.location.href = "login.html";  
+}
+
 
 // Load user info on page load
 window.onload = fetchUser;

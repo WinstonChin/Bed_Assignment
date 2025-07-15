@@ -42,6 +42,7 @@ app.use(express.static(path.join(__dirname, 'public')));
 app.post('/login', validateLogin, loginUser);
 app.post('/signup', validateSignup, signupUser);
 
+
 //Medicine//
 app.get("/api/meds", authenticate, medsController.getAllDates);
 app.get("/api/meds/:id", authenticate, validateDateID, medsController.getDateById);
@@ -92,6 +93,9 @@ app.put('/api/users/:id', loginController.updateUser);
 app.delete('/api/users/:id', loginController.deleteUser);
 
 
+
+
+
 // Serve all frontend folders as static
 app.use(express.static(path.join(__dirname, 'Medicine')));
 app.use(express.static(path.join(__dirname, 'Appointment')));
@@ -102,6 +106,7 @@ app.use(express.static(path.join(__dirname, 'Journal')));
 app.use(express.static(path.join(__dirname, 'DailyPlanner')));
 app.use(express.static(path.join(__dirname, 'Contacts')));
 app.use(express.static(path.join(__dirname, 'Profile')));
+
 
 
 // Routes
