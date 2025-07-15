@@ -13,6 +13,14 @@ let allMeds = [];
 let selectedMedId = null;
 let remindedMeds = new Set();
 
+//get token else locked out//
+const token = localStorage.getItem('token');
+if (!token) {
+  alert("Please log in first");
+  window.location.href = "login.html";
+}
+
+//get date in format//
 function getDateKey(date) {
   return date.toISOString().split('T')[0];
 }

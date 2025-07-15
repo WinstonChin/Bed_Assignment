@@ -49,10 +49,10 @@ async function getUserById(req, res) {
 
 async function updateUser(req, res) {
   const userId = req.params.id;
-  const { name, email, profilePicUrl } = req.body;
+  const { name, email, profilePicUrl, dateOfBirth } = req.body;
 
   try {
-    await loginModel.updateUser(userId, name, email, profilePicUrl);
+    await loginModel.updateUser(userId, name, email, profilePicUrl, dateOfBirth);
     res.json({ message: "User updated" });
   } catch (err) {
     console.error("Update failed:", err);

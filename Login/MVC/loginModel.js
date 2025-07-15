@@ -14,11 +14,12 @@ async function getUserById(id) {
   return result.recordset[0];
 }
 
-async function updateUser(id, name, email, profilePicUrl) {
+async function updateUser(id, name, email, profilePicUrl, dateOfBirth) {
   let updates = [];
   if (name !== undefined) updates.push(`name = '${name}'`);
   if (email !== undefined) updates.push(`email = '${email}'`);
   if (profilePicUrl !== undefined) updates.push(`profilePicUrl = '${profilePicUrl}'`);
+  if (dateOfBirth !== undefined) updates.push(`dateOfBirth = '${dateOfBirth}'`);
 
   if (updates.length === 0) return; 
 

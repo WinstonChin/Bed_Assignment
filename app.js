@@ -36,6 +36,9 @@ app.use(express.urlencoded({ extended: true }));
 
 // Static Files
 app.use(express.static(path.join(__dirname, 'public')));
+app.get('/', (req, res) => {
+  res.sendFile(path.join(__dirname, 'public', 'login.html'));
+});
 
 // Routes
 //Signup/Login//

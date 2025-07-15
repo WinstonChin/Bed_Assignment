@@ -3,6 +3,7 @@ const emailEl = document.getElementById('profile-email');
 const nameInput = document.getElementById('profile-name-input')
 const emailInput = document.getElementById('profile-email-input')
 const profileImg = document.getElementById('output_image');
+const dateInput = document.getElementById('profile-date-input');
 const userId = localStorage.getItem("userId");
 const token = localStorage.getItem('token');
 
@@ -22,6 +23,7 @@ async function fetchUser() {
     const user = await res.json();
     nameInput.value = user.name || "";
     emailInput.value = user.email || "";
+    dateInput.value = user.dateOfBirth ? user.dateOfBirth.split('T')[0] : "";  
     profileImg.src = user.profilePicUrl || "https://www.pngmart.com/files/23/Profile-PNG-Photo.png";
   } catch (err) {
     console.error("Failed to fetch user:", err);
@@ -31,9 +33,14 @@ async function fetchUser() {
 async function saveProfile() {
   const updatedName = nameInput.value.trim();
   const updatedEmail = emailInput.value.trim();
+  const updatedDateOfBirth = dateInput.value;
 
   try {
-    await updateUser({ name: updatedName, email: updatedEmail });
+    await updateUser({ 
+      name: updatedName, 
+      email: updatedEmail, 
+      dateOfBirth: updatedDateOfBirth 
+    });
     alert("Profile updated!");
   } catch (err) {
     console.error("Failed to save profile:", err);
@@ -119,5 +126,3 @@ function logout() {
 }
 
 
-// Load user info on page load
-window.onload = fetchUser;
