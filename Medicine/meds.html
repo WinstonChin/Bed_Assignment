@@ -96,6 +96,18 @@
       font-size: 16px;
     }
 
+    input,
+    select,
+    textarea {
+      width: 100%;
+      padding: 10px;
+      margin-top: 5px;
+      font-size: 16px;
+      border-radius: 8px;
+      border: 1px solid #ccc;
+    }
+
+
     #modal {
       position: fixed;
       top: 50%;
@@ -141,12 +153,21 @@
       <div>Sat</div>
     </div>
 
+    
+
     <div id="calendar"></div>
 
     <h2>Add Medication Reminder</h2>
     <form id="med-form">
       <input type="text" id="med-name" placeholder="Medicine name" required />
       <input type="datetime-local" id="med-datetime" required />
+      <label for="dateTimings">Timings</label>
+      <select id="dateTimings">
+        <option value="1">Once</option>
+        <option value="2">3 times a week</option>
+        <option value="3">Daily -for whole month</option>
+        <option value="4">Monthly</option>
+      </select>
       <button type="submit">Add Reminder</button>
     </form>
   </main>
