@@ -79,15 +79,18 @@ function renderCalendar() {
   const startDay = firstDay.getDay();
   const daysInMonth = new Date(year, month + 1, 0).getDate();
 
+  //show month,year and clear calender///
   monthYearEl.textContent = firstDay.toLocaleString('default', { month: 'long', year: 'numeric' });
   calendarEl.innerHTML = '';
 
+  //"blank" the number of days based on the month//
   for (let i = 0; i < startDay; i++) {
     const empty = document.createElement('div');
     empty.className = 'day';
     calendarEl.appendChild(empty);
   }
 
+  //for each day until end of the month, create a box//
   for (let day = 1; day <= daysInMonth; day++) {
     const date = new Date(year, month, day);
     const dateKey = getDateKey(date);
@@ -95,17 +98,21 @@ function renderCalendar() {
     dayEl.className = 'day';
     dayEl.innerHTML = `<strong>${day}</strong>`;
 
+
+    // add medicine numbers//
     const medsForDay = allMeds.filter(med => getDateKey(new Date(med.datetime)) === dateKey);
+
+    //foreach med entry, give name then hour in 2 digit and minute in 2 digit//
     medsForDay.forEach(med => {
       const div = document.createElement('div');
       div.className = 'med-entry';
       const time = new Date(med.datetime).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
       div.textContent = `${med.medicine} @ ${time}`;
-      div.onclick = () => openEditModal(med);
-      dayEl.appendChild(div);
+      div.onclick = () => openEditModal(med); //clickimg this lets you edit it //
+      dayEl.appendChild(div); 
     });
 
-    calendarEl.appendChild(dayEl);
+    calendarEl.appendChild(dayEl); //edit day with the event//
   }
 }
 
