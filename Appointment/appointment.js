@@ -10,14 +10,20 @@ const deleteBtn = document.getElementById('delete-btn');
 const cancelBtn = document.getElementById('cancel-btn');
 
 let currentDate = new Date();
-let allAppointments = []; 
+let allAppointments = [];
 let selectedAppointmentId = null;
+
+// ✅ Get token or redirect to login
+const token = localStorage.getItem('token');
+if (!token) {
+  alert("Please log in first");
+  window.location.href = "login.html";
+}
 
 function getDateKey(date) {
   const local = new Date(date.getTime() - date.getTimezoneOffset() * 60000);
   return local.toISOString().split('T')[0];
 }
-
 
 function formatDateTimeLocal(datetime) {
   const dt = new Date(datetime);
@@ -25,8 +31,19 @@ function formatDateTimeLocal(datetime) {
   return local.toISOString().slice(0, 16); // Keep local time
 }
 
+// ✅ Fetch appointments using token
 async function fetchAppointmentsFromAPI() {
-  const res = await fetch("/api/appointments");
+  const res = await fetch("/api/appointments", {
+    headers: {
+      "Authorization": `Bearer ${token}`
+    }
+  });
+
+  if (!res.ok) {
+    console.error("Failed to fetch appointments:", await res.text());
+    return;
+  }
+
   const data = await res.json();
   allAppointments = data;
   renderCalendar();
@@ -77,7 +94,10 @@ appointmentForm.addEventListener('submit', async (e) => {
 
   await fetch("/api/appointments", {
     method: "POST",
-    headers: { "Content-Type": "application/json" },
+    headers: {
+      "Content-Type": "application/json",
+      "Authorization": `Bearer ${token}`
+    },
     body: JSON.stringify({ clinic, purpose, time })
   });
 
@@ -111,7 +131,10 @@ editForm.addEventListener('submit', async (e) => {
 
   await fetch(`/api/appointments/${selectedAppointmentId}`, {
     method: "PUT",
-    headers: { "Content-Type": "application/json" },
+    headers: {
+      "Content-Type": "application/json",
+      "Authorization": `Bearer ${token}`
+    },
     body: JSON.stringify({ clinic: updatedClinic, purpose: updatedPurpose, time: updatedTime })
   });
 
@@ -122,7 +145,10 @@ editForm.addEventListener('submit', async (e) => {
 deleteBtn.addEventListener('click', async () => {
   if (confirm("Are you sure you want to delete this appointment?")) {
     await fetch(`/api/appointments/${selectedAppointmentId}`, {
-      method: "DELETE"
+      method: "DELETE",
+      headers: {
+        "Authorization": `Bearer ${token}`
+      }
     });
 
     modal.classList.remove('visible');
@@ -130,4 +156,5 @@ deleteBtn.addEventListener('click', async () => {
   }
 });
 
+// Initial load
 fetchAppointmentsFromAPI();
