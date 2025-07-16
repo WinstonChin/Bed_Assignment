@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>SeniorCare Dashboard</title>
   <style>
     body {
@@ -21,8 +21,20 @@
       text-align: center;
     }
 
+    #clock {
+      font-size: 26px;
+      font-weight: bold;
+      color: #2a6b8f;
+      margin-bottom: 25px;
+      background-color: #e0f0ff;
+      display: inline-block;
+      padding: 10px 20px;
+      border-radius: 12px;
+      box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
+    }
+
     .content-section {
-      background-color: white;
+      background-color: #ffffff;
       padding: 30px;
       margin: 0 auto;
       border-radius: 20px;
@@ -31,13 +43,30 @@
     }
 
     .content-section h2 {
-      font-size: 22px;
+      font-size: 24px;
       color: #2a6b8f;
+      margin-bottom: 10px;
+    }
+
+    .content-section h3 {
+      font-size: 20px;
+      color: #15597a;
+      margin-top: 25px;
     }
 
     .content-section p {
       font-size: 18px;
       margin-top: 10px;
+    }
+
+    .content-section ul {
+      list-style-type: none;
+      padding: 0;
+    }
+
+    .content-section li {
+      font-size: 17px;
+      padding: 6px 0;
     }
 
     footer {
@@ -52,10 +81,11 @@
 </head>
 <body>
 
-  <!-- Load reusable header -->
   <div id="header"></div>
 
   <main>
+    <div id="clock">Loading current time...</div>
+
     <div id="content" class="content-section">
       <h2>Welcome to SeniorCare</h2>
       <p>Tap a button above to get started 🧭</p>
@@ -67,14 +97,11 @@
   </footer>
 
   <script>
-    // Load header.html into the page
     fetch('header.html')
       .then(response => response.text())
       .then(data => {
         document.getElementById('header').innerHTML = data;
 
- 
-        // Attach event listeners (in case the HTML was fetched after DOM is ready)
         document.querySelectorAll('.nav-button').forEach(btn => {
           btn.addEventListener('click', function () {
             const section = this.getAttribute('onclick').match(/'(\w+)'/)[1];
@@ -82,6 +109,79 @@
           });
         });
       });
+
+    // Live clock
+    function updateClock() {
+      const now = new Date();
+      const timeStr = now.toLocaleTimeString([], {
+        hour: '2-digit',
+        minute: '2-digit',
+        second: '2-digit'
+      });
+      const dateStr = now.toLocaleDateString(undefined, {
+        weekday: 'long',
+        year: 'numeric',
+        month: 'long',
+        day: 'numeric'
+      });
+      document.getElementById('clock').textContent = `${dateStr}, ${timeStr}`;
+    }
+
+    setInterval(updateClock, 1000);
+    updateClock();
+
+    async function loadTodayData() {
+      const now = new Date();
+      const today = now.toISOString().split('T')[0];
+
+      const contentDiv = document.getElementById('content');
+
+      try {
+        const [medsRes, appsRes] = await Promise.all([
+          fetch('/api/meds'),
+          fetch('/api/appointments')
+        ]);
+
+        const meds = await medsRes.json();
+        const apps = await appsRes.json();
+
+        const todayMeds = meds.filter(m => m.datetime.startsWith(today));
+        const todayApps = apps.filter(a => a.time.startsWith(today));
+
+        let html = `<h2>Today's Schedule</h2>`;
+
+        if (todayMeds.length === 0 && todayApps.length === 0) {
+          html += `<p>No medications or appointments today! 🎉</p>`;
+        }
+
+        if (todayMeds.length > 0) {
+          html += `<h3>🩺 Medications:</h3><ul>`;
+          todayMeds.forEach(m => {
+            const time = new Date(m.datetime).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+            html += `<li>${m.medicine} at ${time}</li>`;
+          });
+          html += `</ul>`;
+        }
+
+        if (todayApps.length > 0) {
+          html += `<h3>🏥 Appointments:</h3><ul>`;
+          todayApps.forEach(a => {
+            const time = new Date(a.time).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+            html += `<li>${a.clinic} - ${a.purpose} at ${time}</li>`;
+          });
+          html += `</ul>`;
+        }
+
+        contentDiv.innerHTML = html;
+
+      } catch (err) {
+        console.error('Error loading data:', err);
+        contentDiv.innerHTML = `<h2>Error loading today's schedule</h2><p>Please try again later.</p>`;
+      }
+    }
+
+    loadTodayData();
   </script>
+
 </body>
 </html>
