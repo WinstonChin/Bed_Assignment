@@ -22,8 +22,10 @@ if (!token) {
 
 //get date in format//
 function getDateKey(date) {
-  return date.toISOString().split('T')[0];
+  const local = new Date(date.getTime() - date.getTimezoneOffset() * 60000);
+  return local.toISOString().split('T')[0];
 }
+
 
 function formatDateTimeLocal(datetime) {
   const dt = new Date(datetime);
