@@ -55,12 +55,11 @@ app.delete("/api/meds/:id", authenticate, validateDateID, medsController.deleteD
 
 
 
-//Appointment//
-app.get("/api/appointments", appointmentController.getAllAppointments);
-app.get("/api/appointments/:id", validateAppointmentID, appointmentController.getAppointmentById);
-app.post("/api/appointments", validateAppointment, appointmentController.createAppointment);
-app.put("/api/appointments/:id", validateAppointmentID, validateAppointment, appointmentController.updateAppointment);
-app.delete("/api/appointments/:id", validateAppointmentID, appointmentController.deleteAppointment);
+app.get("/api/appointments", authenticate, appointmentController.getAllAppointments);
+app.get("/api/appointments/:id", authenticate, validateAppointmentID, appointmentController.getAppointmentById);
+app.post("/api/appointments", authenticate, validateAppointment, appointmentController.createAppointment);
+app.put("/api/appointments/:id", authenticate, validateAppointmentID, validateAppointment, appointmentController.updateAppointment);
+app.delete("/api/appointments/:id", authenticate, validateAppointmentID, appointmentController.deleteAppointment);
 
 //Mood Tracker//
 app.get('/api/moods/:userId', moodController.getMoodLogs);
@@ -116,19 +115,6 @@ app.use(express.static(path.join(__dirname, 'Profile')));
 app.post('/login', loginUser);
 app.post('/signup', signupUser);
 
-// Medicine Routes
-app.get("/api/meds", medsController.getAllDates);
-app.get("/api/meds/:id", medsController.getDateById);
-app.post("/api/meds", medsController.createDate);
-app.put("/api/meds/:id", medsController.updateDate);
-app.delete("/api/meds/:id", medsController.deleteDate);
-
-// Appointment Routes
-app.get("/api/appointments", appointmentController.getAllAppointments);
-app.get("/api/appointments/:id", appointmentController.getAppointmentById);
-app.post("/api/appointments", appointmentController.createAppointment);
-app.put("/api/appointments/:id", appointmentController.updateAppointment);
-app.delete("/api/appointments/:id", appointmentController.deleteAppointment);
 
 // Health Journal Routes
 app.get('/health-journal', journalController.GetAllEntries);
