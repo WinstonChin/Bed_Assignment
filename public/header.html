@@ -1,94 +1,120 @@
 <!-- header.html -->
+<!-- Google Font for better visual appeal -->
+<link href="https://fonts.googleapis.com/css2?family=Quicksand:wght@500;700&display=swap" rel="stylesheet">
+
 <style>
   body {
-    font-family: 'Segoe UI', sans-serif;
+    font-family: 'Quicksand', 'Segoe UI', sans-serif;
     margin: 0;
-    background-color: #f7fbff;
-    color: #333;
+    background: linear-gradient(135deg, #f9f6ff, #ffffff);
+    color: #3b3b3b;
   }
 
   header {
-    background-color: #87ceeb;
+    background: linear-gradient(90deg, #e0c3fc, #8ec5fc);
+    padding: 25px 40px;
     display: flex;
-    justify-content: space-between;
+    flex-direction: column;
     align-items: center;
-    padding: 20px;
-    flex-wrap: wrap;
-    border-bottom: 4px solid #6aa8c7;
+    border-bottom: 3px solid #c9b1ff;
+    border-radius: 0 0 20px 20px;
+    box-shadow: 0 6px 12px rgba(180, 140, 255, 0.15);
+    animation: fadeInDown 0.6s ease;
+  }
+
+  @keyframes fadeInDown {
+    from { opacity: 0; transform: translateY(-20px); }
+    to { opacity: 1; transform: translateY(0); }
   }
 
   header h1 {
-    margin: 0;
-    font-size: 26px;
-    color: white;
-    font-weight: 500;
+    font-size: 34px;
+    color: #4b2caf;
+    margin-bottom: 15px;
+    font-weight: 700;
+    letter-spacing: 1px;
+    text-shadow: 1px 1px 2px rgba(255, 255, 255, 0.3);
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+
+  header h1::before {
+    content: '🌷';
+    font-size: 30px;
   }
 
   nav {
     display: flex;
-    gap: 10px;
     flex-wrap: wrap;
+    justify-content: center;
+    gap: 14px;
+    max-width: 100%;
   }
 
   .nav-button {
-    padding: 10px 18px;
-    background-color: white;
-    color: #2a6b8f;
+    padding: 12px 22px;
+    background: #fff;
+    color: #6a2dc1;
     border: none;
-    border-radius: 30px;
-    font-size: 16px;
-    font-weight: bold;
+    border-radius: 18px;
+    font-size: 15px;
+    font-weight: 600;
     cursor: pointer;
-    transition: all 0.2s;
-    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    transition: 0.3s ease;
+    box-shadow: 4px 4px 12px #d8cfff, -4px -4px 12px #ffffff;
     display: flex;
     align-items: center;
-    gap: 6px;
+    gap: 8px;
+    text-shadow: 0 1px 0 rgba(255,255,255,0.6);
   }
 
   .nav-button:hover {
-    background-color: #e0f3ff;
+    background: #f3e8ff;
+    color: #4b1ca2;
+    transform: scale(1.05);
+    box-shadow: 2px 2px 8px #ccc, -2px -2px 8px #fff;
   }
 
   footer {
-    background-color: #87ceeb;
+    background-color: #caa8ff;
     color: white;
     text-align: center;
     padding: 15px;
     margin-top: 40px;
     font-size: 14px;
+    border-top: 2px solid #ab82ff;
+    border-radius: 20px 20px 0 0;
+    box-shadow: 0 -4px 10px rgba(190, 140, 255, 0.1);
   }
 
-  @media (max-width: 600px) {
+  @media (max-width: 768px) {
     header {
-      flex-direction: column;
-      align-items: flex-start;
+      padding: 20px;
+      text-align: center;
     }
 
     nav {
-      justify-content: center;
-      width: 100%;
+      flex-direction: column;
+      align-items: center;
     }
 
     .nav-button {
-      flex: 1 1 100%;
+      width: 90%;
       justify-content: center;
     }
   }
 </style>
 
 <header>
-  <h1>👵 SeniorCare</h1>
+  <h1>SeniorCare</h1>
   <nav>
-    <button class="nav-button" onclick="window.location.href='home.html'">🏠 Home</button>
-    <button class="nav-button" onclick="window.location.href='meds.html'">❤️ Meds</button>
-    <button class="nav-button" onclick="window.location.href='appointment.html'">💬 Appointments</button>
-    <button class="nav-button" onclick="window.location.href='daily.html'">🗓️ Daily</button>
+    <button class="nav-button" onclick="window.location.href='home.html'">🏡 Home</button>
+    <button class="nav-button" onclick="window.location.href='meds.html'">💊 Meds</button>
+    <button class="nav-button" onclick="window.location.href='appointment.html'">📅 Appointments</button>
+    <button class="nav-button" onclick="window.location.href='daily.html'">🧘 Daily</button>
     <button class="nav-button" onclick="window.location.href='emergency.html'">🚨 Emergency</button>
-    <button class="nav-button" onclick="window.location.href='journal.html'">📘 Journal</button>
-    <button class="nav-button" onclick="window.location.href='profile.html'">👤 Profile</button>
+    <button class="nav-button" onclick="window.location.href='journal.html'">📔 Journal</button>
+    <button class="nav-button" onclick="window.location.href='profile.html'">👵 Profile</button>
   </nav>
-
 </header>
-
-
