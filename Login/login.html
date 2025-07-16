@@ -1,107 +1,141 @@
-<!DOCTYPE html>
-<html>
-<head>
-  <title>Login</title>
-  <style>
-    body {
-      margin: 0;
-      padding: 0;
-      font-family: 'Quicksand', sans-serif;
-      background: linear-gradient(135deg, #f4e8ff, #ffffff);
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      height: 100vh;
+async function login(e) {
+  e.preventDefault();
+
+  const email = document.getElementById('email').value.trim();
+  const password = document.getElementById('password').value;
+
+  function createWowToast(message) {
+    const toast = document.createElement('div');
+    toast.innerHTML = `
+      <div class="toast-content">
+        <svg class="checkmark" viewBox="0 0 52 52">
+          <circle class="checkmark-circle" cx="26" cy="26" r="25" fill="none"/>
+          <path class="checkmark-check" fill="none" d="M14 27l10 10 14-18"/>
+        </svg>
+        <span>${message}</span>
+      </div>
+    `;
+
+    Object.assign(toast.style, {
+      position: 'fixed',
+      top: '-100px',
+      left: '50%',
+      transform: 'translateX(-50%)',
+      background: 'rgba(255, 255, 255, 0.2)',
+      backdropFilter: 'blur(15px)',
+      borderRadius: '20px',
+      boxShadow: '0 8px 24px rgba(111, 66, 193, 0.5)',
+      color: '#5b2f91',
+      fontFamily: "'Quicksand', sans-serif",
+      fontWeight: '700',
+      fontSize: '18px',
+      padding: '20px 28px',
+      maxWidth: '90vw',
+      display: 'flex',
+      alignItems: 'center',
+      gap: '16px',
+      opacity: '0',
+      zIndex: '99999',
+      userSelect: 'none',
+      cursor: 'default',
+      transition: 'opacity 0.4s ease, top 0.6s cubic-bezier(0.4, 0, 0.2, 1)',
+    });
+
+    if (!document.getElementById('toast-styles')) {
+      const style = document.createElement('style');
+      style.id = 'toast-styles';
+      style.textContent = `
+        .toast-content {
+          display: flex;
+          align-items: center;
+          gap: 16px;
+          position: relative;
+          width: 100%;
+        }
+        .checkmark {
+          width: 32px;
+          height: 32px;
+          stroke: #7a56d4;
+          stroke-width: 4;
+          stroke-linecap: round;
+          stroke-linejoin: round;
+          fill: none;
+          animation: drawCircle 0.6s ease forwards, drawCheck 0.3s ease 0.6s forwards;
+        }
+        .checkmark-circle {
+          stroke-dasharray: 157;
+          stroke-dashoffset: 157;
+        }
+        .checkmark-check {
+          stroke-dasharray: 48;
+          stroke-dashoffset: 48;
+        }
+        @keyframes drawCircle {
+          to {
+            stroke-dashoffset: 0;
+          }
+        }
+        @keyframes drawCheck {
+          to {
+            stroke-dashoffset: 0;
+          }
+        }
+        @keyframes pulseGlow {
+          0%, 100% {
+            box-shadow: 0 0 10px 2px rgba(160, 120, 255, 0.6);
+          }
+          50% {
+            box-shadow: 0 0 18px 4px rgba(160, 120, 255, 0.9);
+          }
+        }
+      `;
+      document.head.appendChild(style);
     }
 
-    .box {
-      background: white;
-      padding: 30px 25px;
-      width: 320px;
-      border-radius: 16px;
-      box-shadow: 0 6px 18px rgba(140, 110, 190, 0.15);
-      animation: fadeIn 0.6s ease;
-    }
+    document.body.appendChild(toast);
 
-    @keyframes fadeIn {
-      from { opacity: 0; transform: translateY(20px); }
-      to { opacity: 1; transform: translateY(0); }
-    }
+    // Animate in
+    setTimeout(() => {
+      toast.style.top = '30px';
+      toast.style.opacity = '1';
+      toast.style.animation = 'pulseGlow 2s ease-in-out infinite';
+    }, 50);
 
-    h2 {
-      text-align: center;
-      color: #5b2f91;
-      margin-bottom: 24px;
-      font-weight: 700;
-      font-size: 22px;
-    }
-
-  input {
-    width: 100%;
-    padding: 12px;
-    margin-bottom: 15px;
-    border: 1px solid #ccc;
-    border-radius: 6px;
-    box-sizing: border-box;
-    font-size: 14px;
-    background: #fafafa;
-    transition: border-color 0.3s ease;
+    // Auto close after 2.5s
+    setTimeout(() => {
+      toast.style.opacity = '0';
+      toast.style.top = '-100px';
+      toast.style.animation = '';
+      toast.addEventListener('transitionend', () => toast.remove());
+    }, 1000);
   }
 
-    input:focus {
-      outline: none;
-      border-color: #a078ff;
-    }
+  try {
+    const res = await fetch("http://localhost:3000/login", {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ email, password })
+    });
 
-    button {
-      width: 100%;
-      padding: 12px;
-      background: linear-gradient(135deg, #a174e8, #7a56d4);
-      border: none;
-      border-radius: 25px;
-      color: white;
-      font-size: 15px;
-      font-weight: 600;
-      cursor: pointer;
-      transition: background-color 0.3s ease;
-      box-shadow: 0 4px 12px rgba(160, 120, 255, 0.25);
-    }
+    const data = await res.json();
 
-    button:hover {
-      background: linear-gradient(135deg, #8d5edb, #5f3bb2);
-    }
+    if (res.ok) {
+      createWowToast("Login successful!");
 
-    .link {
-      text-align: center;
-      margin-top: 16px;
-      font-size: 14px;
-      color: #555;
-    }
+      localStorage.setItem("userId", data.userId);
+      localStorage.setItem("name", data.name);
+      localStorage.setItem("email", data.email);
+      localStorage.setItem("userProfilePic", data.profilePicUrl || "");
+      localStorage.setItem('token', data.token);
 
-    .link a {
-      color: #7b4ae2;
-      text-decoration: none;
-      font-weight: 600;
+      setTimeout(() => {
+        window.location.href = 'home.html';
+      }, 1100);
+    } else {
+      alert(data.error || "Login failed");
     }
-
-    .link a:hover {
-      text-decoration: underline;
-    }
-  </style>
-</head>
-<body>
-  <div class="box">
-    <h2>Login</h2>
-    <form onsubmit="login(event)">
-      <input type="email" id="email" placeholder="Email" required>
-      <input type="password" id="password" placeholder="Password" required>
-      <button type="submit">Login</button>
-    </form>
-    <div class="link">
-      Don't have an account? <a href="signup.html">Sign Up</a>
-    </div>
-  </div>
-  <script src="login.js"></script>
- 
-</body>
-</html>
+  } catch (err) {
+    console.error("Login error:", err);
+    alert("Something went wrong.");
+  }
+}
