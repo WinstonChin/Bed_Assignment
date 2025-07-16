@@ -13,10 +13,6 @@
       color: #333;
     }
 
-    #header {
-      margin-bottom: 30px;
-    }
-
     main {
       padding: 30px 20px;
       max-width: 1000px;
@@ -91,15 +87,7 @@
       border-radius: 8px;
       font-size: 14px;
       color: #3c2179;
-    }
-
-    .delete-btn {
-      background: none;
-      border: none;
-      color: crimson;
-      float: right;
       cursor: pointer;
-      font-size: 16px;
     }
 
     form {
@@ -138,6 +126,7 @@
       background-color: #5a3496;
     }
 
+    /* ✨ MODAL STYLING (MATCHES APPOINTMENT SYSTEM) */
     #modal {
       position: fixed;
       top: 50%;
@@ -146,19 +135,64 @@
       background: white;
       border-radius: 20px;
       box-shadow: 0 8px 20px rgba(100, 0, 150, 0.2);
-      padding: 25px;
-      width: 300px;
+      padding: 30px 35px;
+      width: 340px;
       display: none;
+      font-family: 'Quicksand', sans-serif;
     }
 
     #modal.visible {
       display: block;
     }
 
-    label {
-      margin-top: 12px;
-      font-weight: bold;
-      color: #4a2a7d;
+    #edit-form label {
+      display: block;
+      margin-bottom: 8px;
+      font-weight: 600;
+      font-size: 14px;
+      color: #6a4bdc;
+    }
+
+    #edit-form input {
+      width: 100%;
+      padding: 10px 14px;
+      margin-bottom: 20px;
+      border: 1.8px solid #b5aaff;
+      border-radius: 12px;
+      font-size: 15px;
+      transition: border-color 0.3s ease;
+      background-color: #faf8ff;
+    }
+
+    #edit-form input:focus {
+      outline: none;
+      border-color: #8358e8;
+      background-color: #f4efff;
+    }
+
+    .modal-buttons {
+      display: flex;
+      justify-content: space-between;
+      gap: 10px;
+    }
+
+    .modal-buttons button {
+      flex: 1;
+      padding: 12px;
+      border: none;
+      border-radius: 12px;
+      font-size: 16px;
+      cursor: pointer;
+    }
+
+    .modal-buttons .save-btn {
+      background-color: #764abc;
+      color: white;
+    }
+
+    .modal-buttons .delete-btn {
+      background-color: #f44336;
+      color: white;
     }
   </style>
 </head>
@@ -176,13 +210,7 @@
     </div>
 
     <div id="calendar-header">
-      <div>Sun</div>
-      <div>Mon</div>
-      <div>Tue</div>
-      <div>Wed</div>
-      <div>Thu</div>
-      <div>Fri</div>
-      <div>Sat</div>
+      <div>Sun</div><div>Mon</div><div>Tue</div><div>Wed</div><div>Thu</div><div>Fri</div><div>Sat</div>
     </div>
 
     <div id="calendar"></div>
@@ -202,16 +230,19 @@
     </form>
   </main>
 
+  <!-- 🌟 MODERN EDIT MODAL -->
   <div id="modal">
     <form id="edit-form">
-      <label>Medicine Name:</label><br>
-      <input type="text" id="edit-name" required /><br><br>
+      <label for="edit-name">Medicine Name:</label>
+      <input type="text" id="edit-name" required>
 
-      <label>Date & Time:</label><br>
-      <input type="datetime-local" id="edit-datetime" required /><br><br>
+      <label for="edit-datetime">Date & Time:</label>
+      <input type="datetime-local" id="edit-datetime" required>
 
-      <button type="submit">Save</button>
-      <button type="button" id="delete-btn" style="color: red; margin-left: 10px;">Delete</button>
+      <div class="modal-buttons">
+        <button type="submit" class="save-btn">Save</button>
+        <button type="button" id="delete-btn" class="delete-btn">Delete</button>
+      </div>
     </form>
   </div>
 
