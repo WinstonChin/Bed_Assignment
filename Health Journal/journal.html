@@ -2,162 +2,193 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Health Journal</title>
+  <title>Health Journal - SeniorCare</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <link href="https://fonts.googleapis.com/css2?family=Quicksand:wght@500;700&display=swap" rel="stylesheet" />
   <style>
-    /* Reset */
-* {
-  box-sizing: border-box;
-  margin: 0;
-  padding: 0;
-  font-family: 'Segoe UI', sans-serif;
-}
+    body {
+      font-family: 'Quicksand', sans-serif;
+      margin: 0;
+      background: linear-gradient(to bottom right, #f6ecff, #ffffff);
+      color: #3c2179;
+    }
 
-body {
-  background-color: #f9f9f9;
-  padding: 2rem;
-  color: #333;
-}
+    #header {
+      width: 100%;
+      margin-bottom: 30px;
+    }
 
-/* Header */
-h1 {
-  text-align: center;
-  margin-bottom: 2rem;
-  color: #0077cc;
-}
+    main {
+      max-width: 900px;
+      margin: 0 auto;
+      padding: 30px 20px;
+    }
 
-/* Form */
-form {
-  background-color: #ffffff;
-  padding: 1.5rem;
-  border-radius: 12px;
-  box-shadow: 0 2px 8px rgba(0,0,0,0.1);
-  max-width: 600px;
-  margin: 0 auto 2rem;
-}
+    h1, h2 {
+      text-align: center;
+      color: #5c2a9d;
+      margin-bottom: 25px;
+    }
 
-form label {
-  display: block;
-  margin-bottom: 1rem;
-  font-weight: 500;
-}
+    form {
+      background-color: #fff;
+      padding: 25px;
+      border-radius: 20px;
+      box-shadow: 0 6px 14px rgba(180, 120, 255, 0.08);
+      max-width: 600px;
+      margin: 0 auto 40px;
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+    }
 
-form input,
-form textarea {
-  width: 100%;
-  padding: 0.75rem;
-  margin-top: 0.25rem;
-  border: 1px solid #ccc;
-  border-radius: 8px;
-  font-size: 1rem;
-  resize: vertical;
-}
+    label {
+      font-weight: 700;
+      color: #4a2a7d;
+    }
 
-form button {
-  margin-top: 1rem;
-  background-color: #0077cc;
-  color: #fff;
-  padding: 0.75rem 1.5rem;
-  border: none;
-  border-radius: 8px;
-  cursor: pointer;
-  font-size: 1rem;
-}
+    input[type="date"],
+    input[type="number"],
+    input[type="text"],
+    textarea {
+      width: 100%;
+      padding: 12px;
+      font-size: 16px;
+      border-radius: 10px;
+      border: 1px solid #ccc;
+      resize: vertical;
+      font-family: 'Quicksand', sans-serif;
+      color: #3c2179;
+    }
 
-form button:hover {
-  background-color: #005fa3;
-}
+    button[type="submit"] {
+      margin-top: 10px;
+      background-color: #764abc;
+      color: white;
+      font-size: 16px;
+      padding: 14px 20px;
+      border: none;
+      border-radius: 25px;
+      cursor: pointer;
+      transition: background-color 0.3s ease;
+      box-shadow: 0 4px 10px rgba(118, 74, 188, 0.3);
+      font-weight: 700;
+    }
 
-/* Entry List */
-h2 {
-  text-align: center;
-  margin-bottom: 1rem;
-}
+    button[type="submit"]:hover {
+      background-color: #5a3496;
+    }
 
-#journal-list {
-  max-width: 800px;
-  margin: 0 auto;
-  list-style: none;
-  padding: 0;
-}
+    hr {
+      max-width: 600px;
+      margin: 0 auto 40px;
+      border: none;
+      border-top: 1px solid #d8c7ff;
+      border-radius: 50%;
+    }
 
-#journal-list li {
-  background-color: #ffffff;
-  padding: 1rem;
-  margin-bottom: 1rem;
-  border-radius: 10px;
-  box-shadow: 0 1px 6px rgba(0,0,0,0.08);
-}
+    #journal-list {
+      max-width: 800px;
+      margin: 0 auto;
+      list-style: none;
+      padding: 0;
+      display: flex;
+      flex-direction: column;
+      gap: 20px;
+    }
 
-#journal-list li strong {
-  color: #333;
-}
+    #journal-list li {
+      background-color: #fff;
+      border-radius: 20px;
+      padding: 20px;
+      box-shadow: 0 4px 12px rgba(180, 120, 255, 0.1);
+      color: #3c2179;
+      font-size: 16px;
+    }
 
-#journal-list li em {
-  font-style: italic;
-  color: #555;
-}
+    #journal-list li strong {
+      color: #5c2a9d;
+      font-weight: 700;
+    }
 
-#journal-list button {
-  margin-right: 0.5rem;
-  margin-top: 0.5rem;
-  padding: 0.4rem 0.8rem;
-  font-size: 0.9rem;
-  border: none;
-  border-radius: 6px;
-  cursor: pointer;
-}
+    #journal-list li em {
+      font-style: italic;
+      color: #764abc;
+    }
 
-#journal-list button:first-of-type {
-  background-color: #ffcc00;
-  color: #333;
-}
+    #journal-list button {
+      margin-top: 10px;
+      margin-right: 10px;
+      padding: 8px 16px;
+      font-size: 14px;
+      font-weight: 700;
+      border: none;
+      border-radius: 25px;
+      cursor: pointer;
+      transition: background-color 0.3s ease;
+    }
 
-#journal-list button:last-of-type {
-  background-color: #ff4d4d;
-  color: #fff;
-}
+    #journal-list button.edit-btn {
+      background-color: #caa8f5;
+      color: #3c2179;
+      box-shadow: 0 2px 8px rgba(186, 146, 230, 0.6);
+    }
 
-#journal-list button:hover {
-  opacity: 0.9;
-}
+    #journal-list button.edit-btn:hover {
+      background-color: #b58fe4;
+    }
+
+    #journal-list button.delete-btn {
+      background-color: #ff4d4d;
+      color: white;
+      box-shadow: 0 2px 8px rgba(255, 77, 77, 0.6);
+    }
+
+    #journal-list button.delete-btn:hover {
+      background-color: #e04343;
+    }
   </style>
 </head>
 <body>
-  <h1>My Health Journal</h1>
 
-  <!-- Form -->
-  <form id="journal-form">
-    <input type="hidden" id="entry-id" />
-    <label>
-      Date:
+  <div id="header"></div>
+
+  <main>
+    <h1>📝 My Health Journal</h1>
+
+    <form id="journal-form">
+      <input type="hidden" id="entry-id" />
+      <label for="entry-date">Date:</label>
       <input type="date" id="entry-date" required />
-    </label>
-    <label>
-      Pain Level (0–10):
+
+      <label for="pain-level">Pain Level (0–10):</label>
       <input type="number" id="pain-level" min="0" max="10" required />
-    </label>
-    <label>
-      Pain Location:
+
+      <label for="pain-location">Pain Location:</label>
       <input type="text" id="pain-location" maxlength="50" />
-    </label>
-    <label>
-      Symptoms:
+
+      <label for="symptoms">Symptoms:</label>
       <input type="text" id="symptoms" maxlength="100" required />
-    </label>
-    <label>
-      Notes:
+
+      <label for="notes">Notes:</label>
       <textarea id="notes" maxlength="500" required></textarea>
-    </label>
-    <button type="submit">Save Entry</button>
-  </form>
 
-  <hr />
+      <button type="submit">Save Entry</button>
+    </form>
 
-  <!-- Entries -->
-  <h2>Journal Entries</h2>
-  <ul id="journal-list"></ul>
+    <hr />
 
+    <h2>Journal Entries</h2>
+    <ul id="journal-list"></ul>
+  </main>
+
+  <script>
+    fetch('header.html')
+      .then(response => response.text())
+      .then(html => {
+        document.getElementById('header').innerHTML = html;
+      });
+  </script>
   <script src="journal.js"></script>
 </body>
 </html>
