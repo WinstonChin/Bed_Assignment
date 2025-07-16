@@ -68,21 +68,26 @@
       font-size: 16px;
     }
 
+    /* Updated button styles to match meds/appointment */
     .content-section button {
       margin-top: 20px;
       padding: 12px 25px;
       font-size: 16px;
-      background-color: #2a6b8f;
+      background-color: #764abc;      /* Purple tone */
       color: white;
       border: none;
-      border-radius: 10px;
+      border-radius: 25px;            /* Rounded pill shape */
       cursor: pointer;
+      box-shadow: 0 2px 5px rgba(100, 0, 150, 0.1);
+      transition: background-color 0.3s ease;
+      min-width: 180px;
+      font-family: 'Segoe UI', sans-serif;
+      font-weight: 600;
+    }
+    .content-section button:hover {
+      background-color: #5a3496;      /* Darker purple on hover */
     }
 
-    .content-section button:hover {
-      background-color: #1b4d6b;
-    }
-    
     input,
     select,
     textarea {
@@ -94,6 +99,14 @@
       border: 1px solid #ccc;
     }
 
+    /* Add some spacing between buttons */
+    .btn-group {
+      display: flex;
+      justify-content: center;
+      gap: 20px;
+      margin-top: 30px;
+      flex-wrap: wrap;
+    }
   </style>
 </head>
 <body>
@@ -101,58 +114,60 @@
   <main>
     <div class="content-section">
       <div class="profile-pic-wrapper">
-  <img id="output_image" src="https://www.pngmart.com/files/23/Profile-PNG-Photo.png" onclick="showProfilePicInput()" alt="Profile Picture" />
-  
-  <div id="profilePicInputWrapper" style="display: none;">
-    <input type="text" id="profilePicUrlInput" placeholder="Enter image URL">
-    <button onclick="saveProfilePicUrl()">Save Picture URL</button>
-  </div>
+        <img id="output_image" src="https://www.pngmart.com/files/23/Profile-PNG-Photo.png" onclick="showProfilePicInput()" alt="Profile Picture" />
+        
+        <div id="profilePicInputWrapper" style="display: none;">
+          <input type="text" id="profilePicUrlInput" placeholder="Enter image URL" />
+          <button onclick="saveProfilePicUrl()">Save Picture URL</button>
+        </div>
+      </div>
 
       <div>
-  <label>Name:</label>
-  <input type="text" id="profile-name-input">
-</div>
+        <label>Name:</label>
+        <input type="text" id="profile-name-input" />
+      </div>
 
-<div>
-  <label>Email:</label>
-  <input type="email" id="profile-email-input">
-</div>
-<div>
-  <label for="profile-date-input">Date of Birth:</label>
-  <input type="date" id = "profile-date-input">
-</div>
+      <div>
+        <label>Email:</label>
+        <input type="email" id="profile-email-input" />
+      </div>
 
+      <div>
+        <label for="profile-date-input">Date of Birth:</label>
+        <input type="date" id="profile-date-input" />
+      </div>
 
-<button onclick="saveProfile()">Save Changes</button>
-<button onclick="deleteUser()">Delete Account</button>
-<button onclick="logout()">Log out</button>
-      
+      <div class="btn-group">
+        <button onclick="saveProfile()">Save Changes</button>
+        <button onclick="deleteUser()">Delete Account</button>
+        <button onclick="logout()">Log out</button>
+      </div>
     </div>
   </main>
 <script src="profile.js"></script>
-  <script>
-    fetch('header.html')
-      .then(res => res.text())
-      .then(data => {
-        document.getElementById('header').innerHTML = data;
+<script>
+  fetch('header.html')
+    .then(res => res.text())
+    .then(data => {
+      document.getElementById('header').innerHTML = data;
 
-        window.showContent = function(section) {
-          switch (section) {
-            case 'home': window.location.href = 'home.html'; break;
-            case 'health': window.location.href = 'meds.html'; break;
-            case 'social': window.location.href = 'social.html'; break;
-            case 'emergency': window.location.href = 'emergency.html'; break;
-            case 'profile': window.location.href = 'profile.html'; break;
-          }
-        };
+      window.showContent = function(section) {
+        switch (section) {
+          case 'home': window.location.href = 'home.html'; break;
+          case 'health': window.location.href = 'meds.html'; break;
+          case 'social': window.location.href = 'social.html'; break;
+          case 'emergency': window.location.href = 'emergency.html'; break;
+          case 'profile': window.location.href = 'profile.html'; break;
+        }
+      };
 
-        document.querySelectorAll('.nav-button').forEach(btn => {
-          btn.addEventListener('click', function () {
-            const section = this.getAttribute('onclick').match(/'(\w+)'/)[1];
-            showContent(section);
-          });
+      document.querySelectorAll('.nav-button').forEach(btn => {
+        btn.addEventListener('click', function () {
+          const section = this.getAttribute('onclick').match(/'(\w+)'/)[1];
+          showContent(section);
         });
       });
-  </script>
+    });
+</script>
 </body>
 </html>
