@@ -4,64 +4,89 @@
   <title>Login</title>
   <style>
     body {
-  font-family: sans-serif;
-  background: #f1f1f1;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  height: 100vh;
-  margin: 0;
-}
+      margin: 0;
+      padding: 0;
+      font-family: 'Quicksand', sans-serif;
+      background: linear-gradient(135deg, #f4e8ff, #ffffff);
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+    }
 
-.box {
-  background: white;
-  padding: 30px;
-  width: 320px;
-  border-radius: 10px;
-  box-shadow: 0 0 15px rgba(0,0,0,0.1);
-}
+    .box {
+      background: white;
+      padding: 30px 25px;
+      width: 320px;
+      border-radius: 16px;
+      box-shadow: 0 6px 18px rgba(140, 110, 190, 0.15);
+      animation: fadeIn 0.6s ease;
+    }
 
-h2 {
-  text-align: center;
-  margin-bottom: 20px;
-}
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(20px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
 
-input {
-  width: 100%;
-  padding: 12px;
-  margin-bottom: 15px;
-  border: 1px solid #ccc;
-  border-radius: 6px;
-  box-sizing: border-box;
-  font-size: 14px;
-}
+    h2 {
+      text-align: center;
+      color: #5b2f91;
+      margin-bottom: 24px;
+      font-weight: 700;
+      font-size: 22px;
+    }
 
-button {
-  width: 100%;
-  padding: 12px;
-  background: #007bff;
-  border: none;
-  border-radius: 6px;
-  color: white;
-  font-size: 16px;
-  cursor: pointer;
-  
-}
+  input {
+    width: 100%;
+    padding: 12px;
+    margin-bottom: 15px;
+    border: 1px solid #ccc;
+    border-radius: 6px;
+    box-sizing: border-box;
+    font-size: 14px;
+    background: #fafafa;
+    transition: border-color 0.3s ease;
+  }
 
-button:hover {
-  background: #0056b3;
-}
+    input:focus {
+      outline: none;
+      border-color: #a078ff;
+    }
 
-.link {
-  text-align: center;
-  margin-top: 12px;
-  font-size: 14px;
-}
+    button {
+      width: 100%;
+      padding: 12px;
+      background: linear-gradient(135deg, #a174e8, #7a56d4);
+      border: none;
+      border-radius: 25px;
+      color: white;
+      font-size: 15px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: background-color 0.3s ease;
+      box-shadow: 0 4px 12px rgba(160, 120, 255, 0.25);
+    }
 
-.link a {
-  color: #007bff;
-  text-decoration: none;
-}
+    button:hover {
+      background: linear-gradient(135deg, #8d5edb, #5f3bb2);
+    }
+
+    .link {
+      text-align: center;
+      margin-top: 16px;
+      font-size: 14px;
+      color: #555;
+    }
+
+    .link a {
+      color: #7b4ae2;
+      text-decoration: none;
+      font-weight: 600;
+    }
+
+    .link a:hover {
+      text-decoration: underline;
+    }
   </style>
 </head>
 <body>
