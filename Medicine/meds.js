@@ -146,6 +146,15 @@ medForm.addEventListener('submit', async (e) => {
   await fetchMedsFromAPI();
 });
 
+function medsSpecialCondition(){
+  const oneTime = option1
+  const threeTimes = option2
+  const daily = option3
+  const weekly = option4
+
+  
+}
+
 // Navigate months
 prevBtn.addEventListener('click', () => {
   currentDate.setMonth(currentDate.getMonth() - 1);
