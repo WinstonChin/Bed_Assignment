@@ -126,8 +126,8 @@ function renderCalendar() {
   }
 }
 
-// Add new reminder
-medForm.addEventListener('submit', async (e) => {
+// Add new reminder without special condition (reference for me)//
+/*medForm.addEventListener('submit', async (e) => {
   e.preventDefault();
   const name = document.getElementById('med-name').value;
   const datetime = document.getElementById('med-datetime').value;
@@ -145,15 +145,68 @@ medForm.addEventListener('submit', async (e) => {
   medForm.reset();
   await fetchMedsFromAPI();
 });
+*/
 
-function medsSpecialCondition(){
-  const oneTime = option1
-  const threeTimes = option2
-  const daily = option3
-  const weekly = option4
+medForm.addEventListener('submit', async (e) => {
+  e.preventDefault();
 
-  
-}
+  const name = document.getElementById('med-name').value.trim();
+  const datetimeInput = document.getElementById('med-datetime').value;
+  const recurrence = document.getElementById('dateTimings').value;
+  const token = localStorage.getItem('token');
+
+
+  const datetime = new Date(datetimeInput);
+  let reminders = [];
+
+  if (recurrence === "1") {  // Once
+    reminders.push(datetime);
+  } else if (recurrence === "2") {  // 3 times a day
+    reminders.push(datetime);
+    reminders.push(new Date(datetime.getTime() + 4 * 60 * 60 * 1000));
+    reminders.push(new Date(datetime.getTime() + 8 * 60 * 60 * 1000));
+  } else if (recurrence === "3") {  // Daily for 30 days
+    for (let i = 0; i < 30; i++) {
+      const nextDate = new Date(datetime);
+      nextDate.setDate(datetime.getDate() + i);
+      reminders.push(nextDate);
+    }
+  } else if (recurrence === "4") {  // Weekly for 4 weeks
+    for (let i = 0; i < 4; i++) {
+      const nextDate = new Date(datetime);
+      nextDate.setDate(datetime.getDate() + i * 7);
+      reminders.push(nextDate);
+    }
+  }
+
+  try {
+    for (const reminderDate of reminders) {
+      const res = await fetch("/api/meds", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          "Authorization": `Bearer ${token}`
+        },
+        body: JSON.stringify({
+          medicine: name,
+          datetime: reminderDate.toISOString(),
+       
+        })
+      });
+
+      if (!res.ok) {
+        console.error(`Failed to save reminder for ${reminderDate}`, await res.text());
+      }
+    }
+
+    medForm.reset();
+    await fetchMedsFromAPI();
+  } catch (err) {
+    console.error("Error saving reminders:", err);
+    alert("Error saving reminders");
+  }
+});
+
 
 // Navigate months
 prevBtn.addEventListener('click', () => {
@@ -212,4 +265,6 @@ deleteBtn.addEventListener('click', async () => {
 });
 
 // Load on page start
-fetchMedsFromAPI();
+//fetchMedsFromApi()//
+window.addEventListener('DOMContentLoaded', fetchMedsFromAPI);
+
