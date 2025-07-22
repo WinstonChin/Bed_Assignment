@@ -178,6 +178,12 @@ medForm.addEventListener('submit', async (e) => {
       reminders.push(nextDate);
     }
   }
+  else if (recurrence === "5") {  // Monthly for 3 months
+    for (let i = 0; i < 3; i++) {
+      const nextDate = new Date(datetime);
+      nextDate.setMonth(datetime.getMonth() + i);
+      reminders.push(nextDate);
+    }}
 
   try {
     for (const reminderDate of reminders) {
