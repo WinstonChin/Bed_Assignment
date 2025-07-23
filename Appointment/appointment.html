@@ -2,19 +2,15 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <title>Appointment Reminder Calendar</title>
+  <title>Appointment Calendar</title>
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <link href="https://fonts.googleapis.com/css2?family=Quicksand:wght@500;700&display=swap" rel="stylesheet">
   <style>
     body {
       font-family: 'Quicksand', sans-serif;
       margin: 0;
-      background: linear-gradient(to bottom right, #f7f0ff, #ffffff);
+      background: linear-gradient(to bottom right, #f6ecff, #ffffff);
       color: #333;
-    }
-
-    #header {
-      margin-bottom: 30px;
     }
 
     main {
@@ -26,7 +22,7 @@
     h1, h2 {
       text-align: center;
       color: #5c2a9d;
-      margin-bottom: 20px;
+      margin-bottom: 25px;
     }
 
     #calendar-controls {
@@ -91,15 +87,7 @@
       border-radius: 8px;
       font-size: 14px;
       color: #3c2179;
-    }
-
-    .delete-btn {
-      background: none;
-      border: none;
-      color: crimson;
-      float: right;
       cursor: pointer;
-      font-size: 16px;
     }
 
     form {
@@ -115,12 +103,14 @@
       box-shadow: 0 6px 14px rgba(180, 120, 255, 0.08);
     }
 
-    form input, form button {
+    form input,
+    form button {
       margin: 10px 0;
       padding: 12px;
       font-size: 16px;
       border: 1px solid #ccc;
       border-radius: 10px;
+      font-family: 'Quicksand', sans-serif;
     }
 
     form button {
@@ -135,6 +125,7 @@
       background-color: #5a3496;
     }
 
+    /* ✨ MODAL STYLING (MATCHES MEDS SYSTEM) */
     #modal {
       position: fixed;
       top: 50%;
@@ -143,40 +134,69 @@
       background: white;
       border-radius: 20px;
       box-shadow: 0 8px 20px rgba(100, 0, 150, 0.2);
-      padding: 25px;
-      width: 300px;
+      padding: 30px 35px;
+      width: 340px;
       display: none;
+      font-family: 'Quicksand', sans-serif;
     }
 
-    #modal.visible {
+    #modal.modal-visible {
       display: block;
     }
 
-    .history-btn-container {
-      text-align: center;
-      margin: 30px 0 0 0;
+    #edit-form label {
+      display: block;
+      margin-bottom: 8px;
+      font-weight: 600;
+      font-size: 14px;
+      color: #6a4bdc;
     }
 
-    .history-link {
-      display: inline-block;
-      padding: 12px 24px;
-      background-color: #a15ee8;
-      color: white;
-      text-decoration: none;
-      border-radius: 30px;
+    #edit-form input {
+      width: 100%;
+      padding: 10px 14px;
+      margin-bottom: 20px;
+      border: 1.8px solid #b5aaff;
+      border-radius: 12px;
+      font-size: 15px;
+      transition: border-color 0.3s ease;
+      background-color: #faf8ff;
+    }
+
+    #edit-form input:focus {
+      outline: none;
+      border-color: #8358e8;
+      background-color: #f4efff;
+    }
+
+    .modal-buttons {
+      display: flex;
+      justify-content: space-between;
+      gap: 10px;
+    }
+
+    .modal-buttons button {
+      flex: 1;
+      padding: 12px;
+      border: none;
+      border-radius: 12px;
       font-size: 16px;
-      transition: background-color 0.3s ease;
-      box-shadow: 0 2px 6px rgba(100, 0, 150, 0.1);
+      cursor: pointer;
     }
 
-    .history-link:hover {
-      background-color: #8c44d6;
+    .modal-buttons .save-btn {
+      background-color: #764abc;
+      color: white;
+    }
+
+    .modal-buttons .delete-btn {
+      background-color: #f44336;
+      color: white;
     }
   </style>
 </head>
 <body>
 
-  <!-- Load header.html -->
   <div id="header"></div>
 
   <main>
@@ -189,48 +209,40 @@
     </div>
 
     <div id="calendar-header">
-      <div>Sun</div>
-      <div>Mon</div>
-      <div>Tue</div>
-      <div>Wed</div>
-      <div>Thu</div>
-      <div>Fri</div>
-      <div>Sat</div>
+      <div>Sun</div><div>Mon</div><div>Tue</div><div>Wed</div><div>Thu</div><div>Fri</div><div>Sat</div>
     </div>
 
     <div id="calendar"></div>
 
     <h2>➕ Add Appointment</h2>
     <form id="med-form">
-      <input type="text" id="med-name" placeholder="Clinic" required />
+      <input type="text" id="med-name" placeholder="Clinic name" required />
       <input type="text" id="med-purpose" placeholder="Purpose" required />
       <input type="datetime-local" id="med-datetime" required />
-      <button type="submit">Add Reminder</button>
+      <button type="submit">Add Appointment</button>
     </form>
-
-    <div class="history-btn-container">
-      <a href="appointmenthistory.html" class="history-link">📖 View Appointment History</a>
-    </div>
   </main>
 
-  <!-- Edit Modal -->
+  <!-- Edit box/popup -->
   <div id="modal">
     <form id="edit-form">
-      <label>Clinic:</label><br>
-      <input type="text" id="edit-name" required /><br><br>
+      <label for="edit-name">Clinic Name:</label>
+      <input type="text" id="edit-name" required>
 
-      <label>Purpose:</label><br>
-      <input type="text" id="edit-purpose" required /><br><br>
+      <label for="edit-purpose">Purpose:</label>
+      <input type="text" id="edit-purpose" required>
 
-      <label>Date & Time:</label><br>
-      <input type="datetime-local" id="edit-datetime" required /><br><br>
+      <label for="edit-datetime">Date & Time:</label>
+      <input type="datetime-local" id="edit-datetime" required>
 
-      <button type="submit">Save</button>
-      <button type="button" id="delete-btn" style="color: red; margin-left: 10px;">Delete</button>
+      <div class="modal-buttons">
+        <button type="submit" class="save-btn">Save</button>
+        <button type="button" id="delete-btn" class="delete-btn">Delete</button>
+        <button type="button" id="cancel-btn">Cancel</button>
+      </div>
     </form>
   </div>
 
-  <!-- Load header -->
   <script>
     fetch('header.html')
       .then(response => response.text())
@@ -239,7 +251,6 @@
       });
   </script>
 
-  <!-- Logic -->
   <script src="appointment.js"></script>
 </body>
 </html>
