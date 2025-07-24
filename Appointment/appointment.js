@@ -173,5 +173,58 @@ if (cancelBtn) {
   });
 }
 
+// Appointment History Modal Logic
+const historyBtn = document.getElementById('history-btn');
+const historyModal = document.getElementById('history-modal');
+const historyList = document.getElementById('history-list');
+const closeHistoryBtn = document.getElementById('close-history-btn');
+
+if (historyBtn && historyModal && historyList && closeHistoryBtn) {
+  // ...existing code...
+historyBtn.addEventListener('click', () => {
+  // Get past appointments (before now)
+  const now = new Date();
+  const pastAppointments = allAppointments
+    .filter(app => new Date(app.time) < now)
+    .sort((a, b) => new Date(b.time) - new Date(a.time)); // Most recent first
+
+  // Render list
+  historyList.innerHTML = '';
+  if (pastAppointments.length === 0) {
+    historyList.innerHTML = '<li style="color:#888;">No past appointments.</li>';
+  } else {
+    pastAppointments.forEach(app => {
+      const dateStr = new Date(app.time).toLocaleString();
+      const card = document.createElement('li');
+      card.style.background = '#f6ecff';
+      card.style.borderRadius = '12px';
+      card.style.padding = '16px';
+      card.style.marginBottom = '14px';
+      card.style.boxShadow = '0 2px 8px rgba(120,80,200,0.07)';
+      card.innerHTML = `
+        <div style="font-weight:bold; color:#6b319c; font-size:16px;">${app.clinic}</div>
+        <div style="color:#764abc; margin:6px 0 8px 0;">${app.purpose}</div>
+        <div style="font-size:14px; color:#555;">${dateStr}</div>
+      `;
+      historyList.appendChild(card);
+    });
+  }
+
+  historyModal.style.display = 'block';
+});
+// ...existing code...
+
+  closeHistoryBtn.addEventListener('click', () => {
+    historyModal.style.display = 'none';
+  });
+
+  // Optional: Close modal when clicking outside of it
+  window.addEventListener('click', (e) => {
+    if (e.target === historyModal) {
+      historyModal.style.display = 'none';
+    }
+  });
+}
+
 // Initial load
 window.addEventListener('DOMContentLoaded', fetchAppointmentsFromAPI);
