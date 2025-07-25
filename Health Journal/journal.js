@@ -9,6 +9,12 @@ const locationInput = document.getElementById('pain-location');
 const symptomsInput = document.getElementById('symptoms');
 const notesInput = document.getElementById('notes');
 
+const token = localStorage.getItem('token');
+if (!token) {
+  alert("Please log in first");
+  window.location.href = "login.html";
+}
+
 document.addEventListener('DOMContentLoaded', loadEntries);
 
 form.addEventListener('submit', async (e) => {
@@ -17,6 +23,13 @@ form.addEventListener('submit', async (e) => {
   try {
     // Get input values
     const entryDate = dateInput.value;
+    const now = new Date();
+const selectedDate = new Date(entryDate);
+
+if (selectedDate > now) {
+  throw new Error('Entry date cannot be in the future.');
+}
+
     const painLevel = levelInput.value;
     const painLocation = locationInput.value;
     const symptoms = symptomsInput.value;
@@ -81,9 +94,25 @@ form.addEventListener('submit', async (e) => {
       throw new Error(errorData.message || 'Failed to save entry');
     }
 
+
+
     // Reset form on success
     form.reset();
-    dateInput.valueAsDate = new Date(); // Reset to today's date
+    dateInput.value = new Date().toISOString().slice(0, 16); //
+
+    // Format current datetime as "YYYY-MM-DDTHH:mm"
+function getCurrentDatetimeLocal() {
+  const now = new Date();
+  return now.toISOString().slice(0, 16);
+}
+
+// Set max attribute on load
+document.addEventListener('DOMContentLoaded', () => {
+  const now = getCurrentDatetimeLocal();
+  dateInput.max = now;
+});
+
+
     entryIdInput.value = '';
     await loadEntries();
     alert('Entry saved successfully!');
@@ -109,7 +138,8 @@ async function loadEntries() {
     data.forEach((entry) => {
       const li = document.createElement('li');
       li.innerHTML = `
-        <strong>${new Date(entry.entry_date).toLocaleDateString()}</strong>
+       <strong>${new Date(entry.entry_date).toLocaleString()}</strong>
+
 | Pain: ${entry.pain_level}/10 | Location: ${entry.pain_location}<br />
         <em>Symptoms:</em> ${entry.symptoms}<br />
         <em>Notes:</em> ${entry.notes}<br />
@@ -143,7 +173,8 @@ async function editEntry(id) {
     const entry = await res.json();
 
     entryIdInput.value = entry.id;
-    dateInput.value = entry.entry_date;
+    dateInput.value = new Date(entry.entry_date).toISOString().slice(0, 16); //
+
     levelInput.value = entry.pain_level;
     locationInput.value = entry.pain_location;
     symptomsInput.value = entry.symptoms;
