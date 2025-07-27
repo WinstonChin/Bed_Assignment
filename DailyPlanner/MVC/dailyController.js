@@ -1,5 +1,3 @@
-// ==================== Coen's Mood Tracker ====================
-
 const sql = require('mssql');
 const db = require('../../dbConfig');
 
@@ -11,11 +9,11 @@ const getMoodLogs = async (req, res) => {
         const result = await pool.request()
             .input('userId', sql.Int, userId)
             .query(`
-                SELECT m.MoodName, ml.Note, ml.LogDate 
+                SELECT m.MoodName, ml.Note, ml.LogTimestamp 
                 FROM MoodLogs ml
                 JOIN Moods m ON ml.MoodID = m.MoodID
                 WHERE ml.UserID = @userId
-                ORDER BY ml.LogDate DESC
+                ORDER BY ml.LogTimestamp DESC
             `);
         res.json(result.recordset);
     } catch (err) {
@@ -26,17 +24,17 @@ const getMoodLogs = async (req, res) => {
 // POST mood log
 const logMood = async (req, res) => {
     try {
-        const { userId, moodId, note, logDate } = req.body;
+        const { userId, moodId, note, logTimestamp } = req.body;
         const pool = await sql.connect(db);
         await pool.request()
             .input('userId', sql.Int, userId)
             .input('moodId', sql.Int, moodId)
             .input('note', sql.Text, note)
-            .input('logDate', sql.Date, logDate)
+            .input('logTimestamp', sql.DateTime, new Date(logTimestamp))
             .query(`
-                INSERT INTO MoodLogs (UserID, MoodID, LogDate, Note)
-                VALUES (@userId, @moodId, @logDate, @note)
-            `);
+                INSERT INTO MoodLogs (UserID, MoodID, LogTimestamp, Note)
+                VALUES (@userId, @moodId, @logTimestamp, @note)
+                `);
         res.json({ message: 'Mood logged successfully.' });
     } catch (err) {
         res.status(500).json({ error: err.message });
