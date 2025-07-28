@@ -150,4 +150,10 @@ async function deleteUser() {
   }
 }
 
-// Logout
+function logout() {
+  alert("Logging out...");
+  localStorage.clear();
+  window.location.href = "login.html";
+}
+
+document.getElementById('logout-btn').addEventListener('click', logout);
