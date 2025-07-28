@@ -94,6 +94,21 @@
       border-top-right-radius: 20px;
       box-shadow: 0 -4px 10px rgba(180, 140, 255, 0.15);
     }
+    .weather {
+  font-size: 18px;
+  color: #333;
+  margin-top: 30px;
+  padding: 35px;
+  background: rgba(255, 255, 255, 0.95);
+  border-radius: 22px;
+  box-shadow: 6px 6px 16px rgba(170, 140, 240, 0.1),
+              -4px -4px 12px rgba(255, 255, 255, 0.6);
+  animation: fadeIn 1s ease;
+  max-width: 800px;
+  width: 120%;
+  box-sizing: border-box;
+  text-align: center;
+}
   </style>
 </head>
 <body>
@@ -107,10 +122,12 @@
       <h2>Welcome to SeniorCare</h2>
       <p>Tap a button above to get started 🧭</p>
     </div>
-  </main>
-  <div id = "weather">
+
+    <div id = "weather" class = "weather">
     Loading weather...
   </div>
+  </main>
+  
 
   <footer>
     <p>© 2025 SeniorCare. Stay joyful, stay well 💜</p>
