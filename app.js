@@ -15,6 +15,7 @@ const appointmentController = require('./Appointment/MVC/appointmentController')
 const journalController = require('./Health Journal/MVC/journalController');
 const moodController = require('./DailyPlanner/MVC/dailyController'); 
 const emergencyController = require('./Contacts/MVC/emergencyController');
+const weatherController = require("./Weather Checker/MVC/weatherController");
 
 // Import validation middleware
 const { validateLogin } = require('./Login/MVC/loginValidation');
@@ -39,6 +40,7 @@ app.use(express.static(path.join(__dirname, 'public')));
 app.get('/', (req, res) => {
   res.sendFile(path.join(__dirname, 'public', 'login.html'));
 });
+app.use(express.static(path.join(__dirname, 'Weather Checker')));
 
 // Routes
 //Signup/Login//
@@ -93,6 +95,15 @@ const loginController = require('./Login/MVC/loginController');
 app.get('/api/users/:id', loginController.getUserById);
 app.put('/api/users/:id', loginController.updateUser);
 app.delete('/api/users/:id', loginController.deleteUser);
+
+// Weather Checker Routes
+app.get("/weather.html", (req, res) => {
+  res.sendFile(path.join(__dirname, "Weather Checker", "weather.html"));
+});
+app.post("/api/weather", weatherController.createWeatherCheck);
+app.get("/api/weather", weatherController.getWeatherChecks);
+app.put("/api/weather/:id", weatherController.updateWeatherEntry);
+app.delete("/api/weather/:id", weatherController.deleteWeatherEntry);
 
 
 

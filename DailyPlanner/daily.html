@@ -102,15 +102,14 @@
       <input type="date" id="logDate" />
 
       <label for="moodSelect">Mood</label>
-      <select id="moodSelect">
-        <option value="1">Happy</option>
-        <option value="2">Tired</option>
-        <option value="3">Lonely</option>
-        <option value="4">Anxious</option>
-        <option value="5">Excited</option>
-        <option value="6">Sad</option>
-        <option value="7">Calm</option>
-      </select>
+      <div id="emojiPicker">
+  <button onclick="setMood(1)">😊</button>
+  <button onclick="setMood(2)">😔</button>
+  <button onclick="setMood(3)">😠</button>
+  <button onclick="setMood(4)">😰</button>
+</div>
+<input type="hidden" id="moodSelect" value="1" />
+
 
       <label for="moodNote">Note (optional)</label>
       <textarea id="moodNote" placeholder="Write something..."></textarea>
