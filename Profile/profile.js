@@ -1,7 +1,7 @@
 const nameEl = document.getElementById('profile-name');
 const emailEl = document.getElementById('profile-email');
-const nameInput = document.getElementById('profile-name-input')
-const emailInput = document.getElementById('profile-email-input')
+const nameInput = document.getElementById('profile-name-input');
+const emailInput = document.getElementById('profile-email-input');
 const profileImg = document.getElementById('output_image');
 const dateInput = document.getElementById('profile-date-input');
 const userId = localStorage.getItem("userId");
@@ -12,42 +12,66 @@ if (!token) {
   window.location.href = "login.html";
 }
 
+// Show cached profile instantly
+function showCachedProfile() {
+  const cached = JSON.parse(localStorage.getItem('profile') || '{}');
+  if (cached.name) nameInput.value = cached.name;
+  if (cached.email) emailInput.value = cached.email;
+  if (cached.dateOfBirth) dateInput.value = cached.dateOfBirth;
+  if (cached.profilePicUrl) profileImg.src = cached.profilePicUrl;
+}
 
-
-window.onload = fetchUser;
-
-// 1. Load user info from DB
+// Load user info from DB
 async function fetchUser() {
+  showCachedProfile();
   try {
-    const res = await fetch(`http://localhost:3000/api/users/${userId}`);
+    const res = await fetch(`http://localhost:3000/api/users/${userId}`, {
+      headers: { "Authorization": `Bearer ${token}` }
+    });
+    if (!res.ok) throw new Error("Failed to fetch user");
     const user = await res.json();
     nameInput.value = user.name || "";
     emailInput.value = user.email || "";
-    dateInput.value = user.dateOfBirth ? user.dateOfBirth.split('T')[0] : "";  
+    dateInput.value = user.dateOfBirth ? user.dateOfBirth.split('T')[0] : "";
     profileImg.src = user.profilePicUrl || "https://www.pngmart.com/files/23/Profile-PNG-Photo.png";
+    localStorage.setItem('profile', JSON.stringify({
+      name: user.name,
+      email: user.email,
+      dateOfBirth: user.dateOfBirth ? user.dateOfBirth.split('T')[0] : "",
+      profilePicUrl: user.profilePicUrl
+    }));
   } catch (err) {
     console.error("Failed to fetch user:", err);
   }
 }
 
+window.onload = fetchUser;
+
+// Save profile info
 async function saveProfile() {
   const updatedName = nameInput.value.trim();
   const updatedEmail = emailInput.value.trim();
   const updatedDateOfBirth = dateInput.value;
 
   try {
-    await updateUser({ 
-      name: updatedName, 
-      email: updatedEmail, 
-      dateOfBirth: updatedDateOfBirth 
+    await updateUser({
+      name: updatedName,
+      email: updatedEmail,
+      dateOfBirth: updatedDateOfBirth
     });
+    localStorage.setItem('profile', JSON.stringify({
+      name: updatedName,
+      email: updatedEmail,
+      dateOfBirth: updatedDateOfBirth,
+      profilePicUrl: profileImg.src
+    }));
     alert("Profile updated!");
   } catch (err) {
     console.error("Failed to save profile:", err);
   }
 }
 
-// 2. Upload and update profile picture
+// Show profile picture input
 function showProfilePicInput() {
   document.getElementById('profilePicInputWrapper').style.display = 'block';
 }
@@ -57,21 +81,29 @@ async function saveProfilePicUrl() {
   const picUrl = document.getElementById('profilePicUrlInput').value.trim();
   if (!picUrl) return alert("Please enter a valid URL");
 
-  profileImg.src = picUrl; 
+  profileImg.src = picUrl;
 
   try {
     await fetch(`http://localhost:3000/api/users/${userId}`, {
       method: "PUT",
-      headers: { "Content-Type": "application/json" },
+      headers: {
+        "Content-Type": "application/json",
+        "Authorization": `Bearer ${token}`
+      },
       body: JSON.stringify({ profilePicUrl: picUrl })
     });
+    localStorage.setItem('profile', JSON.stringify({
+      name: nameInput.value,
+      email: emailInput.value,
+      dateOfBirth: dateInput.value,
+      profilePicUrl: picUrl
+    }));
     alert("Profile picture updated!");
     document.getElementById('profilePicInputWrapper').style.display = 'none';
     document.getElementById('profilePicUrlInput').value = '';
   } catch (err) {
     console.error("Error saving profile pic:", err);
   }
-  
 }
 
 function toggleEditPic() {
@@ -79,13 +111,15 @@ function toggleEditPic() {
   section.style.display = section.style.display === 'none' ? 'block' : 'none';
 }
 
-
-// 3. Update user info -
+// Update user info
 async function updateUser(updateData) {
   try {
     const res = await fetch(`http://localhost:3000/api/users/${userId}`, {
       method: "PUT",
-      headers: { "Content-Type": "application/json" },
+      headers: {
+        "Content-Type": "application/json",
+        "Authorization": `Bearer ${token}`
+      },
       body: JSON.stringify(updateData)
     });
 
@@ -93,36 +127,27 @@ async function updateUser(updateData) {
     console.log("User updated");
   } catch (err) {
     console.error("Update error:", err);
-    
-
   }
-  
 }
 
-// 4. Delete user
+// Delete user
 async function deleteUser() {
   if (!confirm("Are you sure you want to delete your account?")) return;
 
   try {
     const res = await fetch(`http://localhost:3000/api/users/${userId}`, {
-      method: "DELETE"
+      method: "DELETE",
+      headers: { "Authorization": `Bearer ${token}` }
     });
 
     if (!res.ok) throw new Error("Delete failed");
 
     alert("Account deleted");
     localStorage.clear();
-    window.location.href = "signup.html"; 
+    window.location.href = "signup.html";
   } catch (err) {
     console.error("Delete error:", err);
   }
 }
 
-//clears token from ls and logs out//
-function logout() {
-  localStorage.clear();  
-  alert('Logging out');
-  window.location.href = "login.html";  
-}
-
-
+// Logout
