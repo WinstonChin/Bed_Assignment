@@ -125,7 +125,7 @@
       background-color: #5a3496;
     }
 
-    /* ✨ MODAL STYLING (MATCHES MEDS SYSTEM) */
+    /* MODAL STYLING */
     #modal {
       position: fixed;
       top: 50%;
@@ -138,6 +138,7 @@
       width: 340px;
       display: none;
       font-family: 'Quicksand', sans-serif;
+      z-index: 1001;
     }
 
     #modal.modal-visible {
@@ -193,6 +194,44 @@
       background-color: #f44336;
       color: white;
     }
+
+    /* History Modal */
+    #history-modal {
+      display: none;
+      position: fixed;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      background: #fff;
+      border-radius: 20px;
+      box-shadow: 0 8px 20px rgba(100,0,150,0.2);
+      padding: 30px 35px;
+      width: 380px;
+      z-index: 2000;
+    }
+    #history-modal h2 {
+      margin-top: 0;
+      color: #5c2a9d;
+    }
+    #history-list {
+      max-height: 300px;
+      overflow-y: auto;
+      padding-left: 0;
+      list-style: none;
+    }
+    #history-list li {
+      margin-bottom: 14px;
+    }
+    #close-history-btn {
+      margin-top: 18px;
+      background: #764abc;
+      color: #fff;
+      border: none;
+      border-radius: 12px;
+      padding: 10px 22px;
+      font-size: 15px;
+      cursor: pointer;
+    }
   </style>
 </head>
 <body>
@@ -201,6 +240,10 @@
 
   <main>
     <h1>📅 Appointment Calendar</h1>
+
+    <button id="history-btn" style="margin: 20px auto; display: block; background: #6b319c; color: #fff; border-radius: 20px; padding: 12px 28px; border: none; font-size: 16px; cursor: pointer;">
+      Appointment History
+    </button>
 
     <div id="calendar-controls">
       <button id="prev-month">← Previous</button>
@@ -241,6 +284,13 @@
         <button type="button" id="cancel-btn">Cancel</button>
       </div>
     </form>
+  </div>
+
+  <!-- History Modal -->
+  <div id="history-modal">
+    <h2>Past Appointments</h2>
+    <ul id="history-list"></ul>
+    <button id="close-history-btn">Close</button>
   </div>
 
   <script>
