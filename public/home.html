@@ -12,18 +12,13 @@
       background: linear-gradient(135deg, #f9f6ff, #ffffff);
       color: #333;
     }
-
-    #header {
-      margin-bottom: 30px;
-    }
-
+    #header { margin-bottom: 30px; }
     main {
       padding: 30px 20px;
       display: flex;
       flex-direction: column;
       align-items: center;
     }
-
     #clock {
       font-size: 26px;
       font-weight: bold;
@@ -37,52 +32,26 @@
       border: 1px solid rgba(200, 180, 255, 0.4);
       animation: fadeIn 1s ease;
     }
-
     @keyframes fadeIn {
       from { opacity: 0; transform: translateY(10px); }
       to { opacity: 1; transform: translateY(0); }
     }
-
     .content-section {
       background: #fff;
       padding: 35px;
       border-radius: 22px;
       max-width: 800px;
       width: 100%;
-      box-shadow: 6px 6px 16px rgba(170, 140, 240, 0.1),
-                  -4px -4px 12px rgba(255, 255, 255, 0.6);
+      box-shadow: 6px 6px 16px rgba(170, 140, 240, 0.1), -4px -4px 12px rgba(255, 255, 255, 0.6);
       transition: all 0.3s ease;
+      margin-bottom: 30px;
     }
-
-    .content-section h2 {
-      font-size: 26px;
-      color: #4b2caf;
-      margin-bottom: 20px;
-    }
-
-    .content-section h3 {
-      font-size: 20px;
-      color: #6239a1;
-      margin-top: 30px;
-    }
-
-    .content-section p {
-      font-size: 18px;
-      color: #444;
-      margin-top: 10px;
-    }
-
-    .content-section ul {
-      list-style-type: none;
-      padding: 0;
-    }
-
-    .content-section li {
-      font-size: 17px;
-      padding: 6px 0;
-      color: #555;
-    }
-
+    .content-section h2 { font-size: 26px; color: #4b2caf; margin-bottom: 20px; }
+    .content-section h3 { font-size: 20px; color: #6239a1; margin-top: 30px; }
+    .content-section p { font-size: 18px; color: #444; margin-top: 10px; }
+    .content-section ul { list-style-type: none; padding: 0; }
+    .content-section li { font-size: 17px; padding: 6px 0; color: #555; }
+    #weather-section { max-width: 800px; margin-bottom: 30px; width: 100%; }
     footer {
       background: linear-gradient(90deg, #c9a7f4, #a3c8f6);
       color: white;
@@ -94,21 +63,6 @@
       border-top-right-radius: 20px;
       box-shadow: 0 -4px 10px rgba(180, 140, 255, 0.15);
     }
-    .weather {
-  font-size: 18px;
-  color: #333;
-  margin-top: 30px;
-  padding: 35px;
-  background: rgba(255, 255, 255, 0.95);
-  border-radius: 22px;
-  box-shadow: 6px 6px 16px rgba(170, 140, 240, 0.1),
-              -4px -4px 12px rgba(255, 255, 255, 0.6);
-  animation: fadeIn 1s ease;
-  max-width: 800px;
-  width: 120%;
-  box-sizing: border-box;
-  text-align: center;
-}
   </style>
 </head>
 <body>
@@ -118,74 +72,52 @@
   <main>
     <div id="clock">Loading current time...</div>
 
+    <div id="weather-section" class="content-section">
+      <h2>🌤️ Weekly Weather</h2>
+      <div id="weather"></div>
+    </div>
+
     <div id="content" class="content-section">
       <h2>Welcome to SeniorCare</h2>
       <p>Tap a button above to get started 🧭</p>
     </div>
-
-    <div id = "weather" class = "weather">
-    Loading weather...
-  </div>
   </main>
-  
 
   <footer>
     <p>© 2025 SeniorCare. Stay joyful, stay well 💜</p>
   </footer>
-  <script src = 'home.js'></script>
+
+  <script src="home.js"></script>
   <script>
     // Load shared header
     fetch('header.html')
-      .then(response => response.text())
-      .then(data => {
-        document.getElementById('header').innerHTML = data;
-      });
+      .then(r => r.text())
+      .then(html => document.getElementById('header').innerHTML = html);
 
     // Live clock
     function updateClock() {
       const now = new Date();
-      const timeStr = now.toLocaleTimeString([], {
-        hour: '2-digit',
-        minute: '2-digit',
-        second: '2-digit'
-      });
-      const dateStr = now.toLocaleDateString(undefined, {
-        weekday: 'long',
-        year: 'numeric',
-        month: 'long',
-        day: 'numeric'
-      });
+      const timeStr = now.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', second: '2-digit' });
+      const dateStr = now.toLocaleDateString(undefined, { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' });
       document.getElementById('clock').textContent = `${dateStr}, ${timeStr}`;
     }
-
     setInterval(updateClock, 1000);
     updateClock();
 
     // Load today's data
     async function loadTodayData() {
-      const now = new Date();
-      const today = now.toISOString().split('T')[0];
+      const today = new Date().toISOString().split('T')[0];
       const contentDiv = document.getElementById('content');
-
       try {
-        const [medsRes, appsRes] = await Promise.all([
-          fetch('/api/meds'),
-          fetch('/api/appointments')
-        ]);
-
-        const meds = await medsRes.json();
-        const apps = await appsRes.json();
-
+        const [medsRes, appsRes] = await Promise.all([fetch('/api/meds'), fetch('/api/appointments')]);
+        const meds = await medsRes.json(), apps = await appsRes.json();
         const todayMeds = meds.filter(m => m.datetime.startsWith(today));
         const todayApps = apps.filter(a => a.time.startsWith(today));
-
         let html = `<h2>Today's Schedule</h2>`;
-
         if (todayMeds.length === 0 && todayApps.length === 0) {
           html += `<p>No medications or appointments today! 🎉</p>`;
         }
-
-        if (todayMeds.length > 0) {
+        if (todayMeds.length) {
           html += `<h3>💊 Medications:</h3><ul>`;
           todayMeds.forEach(m => {
             const time = new Date(m.datetime).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
@@ -193,8 +125,7 @@
           });
           html += `</ul>`;
         }
-
-        if (todayApps.length > 0) {
+        if (todayApps.length) {
           html += `<h3>🏥 Appointments:</h3><ul>`;
           todayApps.forEach(a => {
             const time = new Date(a.time).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
@@ -202,17 +133,16 @@
           });
           html += `</ul>`;
         }
-
         contentDiv.innerHTML = html;
-
-      } catch (err) {
-        console.error('Error loading data:', err);
+      } catch (e) {
+        console.error(e);
         contentDiv.innerHTML = `<h2>Error loading today's schedule</h2><p>Please try again later.</p>`;
       }
     }
-
     loadTodayData();
   </script>
+  
+::contentReference[oaicite:0]{index=0}
 
 </body>
 </html>
