@@ -1,64 +1,41 @@
-document.getElementById('activity-form').addEventListener('submit', async (event) => {
-  event.preventDefault();
-  
-  const userId = 1; // Assume userId is fetched dynamically
-  const startTime = document.getElementById('start-time').value;
-  const endTime = document.getElementById('end-time').value;
+document.getElementById('addPlanner').addEventListener('click', async () => {
+  const userId = parseInt(document.getElementById('plannerUser').value, 10);
   const activity = document.getElementById('activity').value;
-  
+  const startTime = document.getElementById('startTime').value;
+  const endTime = document.getElementById('endTime').value;
+  const status = document.getElementById('status').value;
+
   const response = await fetch('/api/dailyPlanner', {
     method: 'POST',
-    headers: {
-      'Content-Type': 'application/json',
-    },
-    body: JSON.stringify({ userId, startTime, endTime, activity }),
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ userId, activity, startTime, endTime, status })
   });
-  
+
   const result = await response.json();
   if (response.ok) {
-    alert('Activity added successfully');
-    loadActivities(); // Refresh activities list
+    alert('Activity added');
+    loadActivities();
   } else {
-    alert(result.message || 'Error adding activity');
+    alert(result.error || result.message || 'Failed to add activity');
   }
 });
 
-const loadActivities = async () => {
-  const userId = 1; // Assume userId is fetched dynamically
+async function loadActivities() {
+  const userId = parseInt(document.getElementById('plannerUser').value, 10);
+  if (!userId) return;
+
   const response = await fetch(`/api/dailyPlanner/${userId}`);
-  const activities = await response.json();
-  
-  const activitiesContainer = document.getElementById('activities');
-  activitiesContainer.innerHTML = activities.map(activity => `
-    <div>
-      <p>${activity.Activity} - ${activity.StartTime} to ${activity.EndTime} - Status: ${activity.Status}</p>
-    </div>
-  `).join('');
-};
+  const data = await response.json();
+  const plannerList = document.getElementById('plannerList');
 
-async function submitDailyPlanner() {
-  const data = {
-    userId: 1,  // Example userId, adjust this based on your authentication logic
-    startTime: document.getElementById('startTime').value,
-    endTime: document.getElementById('endTime').value,
-    activity: document.getElementById('activity').value,
-  };
-
-  const response = await fetch('/api/dailyPlanner', {
-    method: 'POST',
-    headers: {
-      'Content-Type': 'application/json',
-    },
-    body: JSON.stringify(data),
-  });
-
-  const result = await response.json();
-  if (response.ok) {
-    alert('Activity added successfully');
+  if (Array.isArray(data)) {
+    plannerList.innerHTML = data.map(item => `
+      <li>${item.Activity} — ${item.StartTime} to ${item.EndTime} — ${item.Status}</li>
+    `).join('');
   } else {
-    alert('Error: ' + result.error);
+    plannerList.innerHTML = '<li>No activities found</li>';
   }
 }
 
-
-loadActivities();
+// Optional: auto-reload when user ID is entered
+document.getElementById('plannerUser').addEventListener('change', loadActivities);

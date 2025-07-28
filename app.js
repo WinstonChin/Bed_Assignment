@@ -24,6 +24,7 @@ const { validateDate, validateDateID } = require('./Medicine/MVC/medsValidation'
 const { authenticate } = require("./Login/authenticate");
 const { validateAppointment, validateAppointmentID } = require('./Appointment/MVC/appointmentValidation');
 const { validateEmergencyInfo } = require('./Contacts/MVC/emergencyValidation');
+const { validateActivity} = require('./Daily-Planner/MVC/dailyPlannerValidation');
 
 
 
@@ -76,11 +77,13 @@ const dailyPlannerController = require('./Daily-Planner/MVC/dailyPlannerControll
 const panicButtonController = require('./PanicButton/MVC/panicButtonController');
 
 // Daily Planner Routes
-app.get("/api/dailyPlanner/:userId", authenticate, dailyPlannerController.getAllActivities);
-app.get("/api/dailyPlanner/:userId/:id", authenticate, dailyPlannerController.getActivityById);
-app.post("/api/dailyPlanner", authenticate, dailyPlannerController.createActivity);
-app.put("/api/dailyPlanner/:id", authenticate, dailyPlannerController.updateActivity);
-app.delete("/api/dailyPlanner/:id", authenticate, dailyPlannerController.deleteActivity);
+app.get("/api/dailyPlanner/:userId", dailyPlannerController.getAllActivities);
+
+app.get("/api/dailyPlanner/:userId/:id", dailyPlannerController.getActivityById);
+app.post("/api/dailyPlanner", validateActivity, dailyPlannerController.createActivity);
+
+app.put("/api/dailyPlanner/:id", dailyPlannerController.updateActivity);
+app.delete("/api/dailyPlanner/:id", dailyPlannerController.deleteActivity);
 
 // Panic Button Routes
 app.get("/api/panicButton/:userId", authenticate, panicButtonController.getAllEmergencies);

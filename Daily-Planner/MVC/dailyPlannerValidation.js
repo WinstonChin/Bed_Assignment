@@ -6,11 +6,12 @@ const validateActivity = (req, res, next) => {
     startTime: Joi.string().required(),
     endTime: Joi.string().required(),
     activity: Joi.string().required(),
+    status: Joi.string().valid('pending', 'completed', 'missed').required(),
   });
 
   const { error } = schema.validate(req.body);
   if (error) {
-    return res.status(400).send(error.details[0].message);
+    return res.status(400).send({ error: error.details[0].message });
   }
   next();
 };
