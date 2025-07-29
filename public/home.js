@@ -19,6 +19,22 @@ function updateClock() {
 }
 setInterval(updateClock, 1000);
 updateClock();
+// Quote of the Day
+fetch('/api/quote')
+  .then(res => res.json())
+  .then(data => {
+    if (!data.quote || !data.author) {
+      throw new Error('Invalid quote data');
+    }
+    document.getElementById('quote-text').textContent = `"${data.quote}"`;
+    document.getElementById('quote-author').textContent = `— ${data.author}`;
+  })
+  .catch(err => {
+    document.getElementById('quote-text').textContent = 'Stay positive, your smile is your strength!';
+    document.getElementById('quote-author').textContent = '— SeniorCare';
+    console.error('Quote fetch error:', err);
+  });
+
 
 // Load today's medications and appointments
 async function loadTodayData() {

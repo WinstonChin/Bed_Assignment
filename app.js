@@ -3,6 +3,7 @@ const path = require('path');
 const sql = require('mssql');
 const cors = require('cors');
 require('dotenv').config();
+const axios = require('axios');
 
 // Database Configuration
 const dbConfig = require("./dbConfig");
@@ -110,6 +111,27 @@ app.delete("/api/weather/:id", weatherController.deleteWeatherEntry);
 
 
 
+//Quote of the day
+
+
+app.get('/api/quote', async (req, res) => {
+  try {
+    const response = await axios.get('https://zenquotes.io/api/today'); // or /random
+    const data = response.data;
+
+    if (!data || !Array.isArray(data) || !data[0]) {
+      return res.status(500).json({ error: 'Invalid quote data received.' });
+    }
+
+    res.json({
+      quote: data[0].q,
+      author: data[0].a
+    });
+  } catch (error) {
+    console.error('Quote fetch failed:', error.message);
+    res.status(500).json({ error: 'Failed to fetch quote' });
+  }
+});
 
 
 // Serve all frontend folders as static
