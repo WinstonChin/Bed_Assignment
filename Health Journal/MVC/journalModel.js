@@ -73,7 +73,7 @@ async function CreateEntry(data) {
     `;
     const request = connection.request();
     request.input("user_id", sql.Int, data.user_id);
-    request.input("entry_date", sql.Date, data.entry_date);
+    request.input("entry_date", sql.DateTime2, data.entry_date);
     request.input("pain_level", sql.TinyInt, data.pain_level);
     request.input("pain_location", sql.VarChar(50), data.pain_location);
     request.input("symptoms", sql.VarChar(100), data.symptoms);

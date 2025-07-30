@@ -1,3 +1,15 @@
+function showMessage(msg, type = 'success') {
+  const box = document.getElementById('message-box');
+  box.textContent = msg;
+  box.style.display = 'block';
+  box.style.backgroundColor = type === 'error' ? '#f8d7da' : '#d1e7dd';
+  box.style.color = type === 'error' ? '#842029' : '#0f5132';
+  box.style.border = `1px solid ${type === 'error' ? '#f5c2c7' : '#badbcc'}`;
+
+  setTimeout(() => {
+    box.style.display = 'none';
+  }, 5000);
+}
 const API_URL = '/health-journal';
 const form = document.getElementById('journal-form');
 const journalList = document.getElementById('journal-list');
@@ -15,7 +27,7 @@ if (!token) {
   window.location.href = "login.html";
 }
 
-document.addEventListener('DOMContentLoaded', loadEntries);
+
 
 form.addEventListener('submit', async (e) => {
   e.preventDefault();
@@ -80,19 +92,20 @@ if (selectedDate > now) {
     const url = id ? `${API_URL}/${id}` : API_URL;
 
     // Send to server
-    const response = await fetch(url, {
-      method,
-      headers: { 
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify(entry),
-      credentials: 'include'
-    });
+  const response = await fetch(url, {
+  method,
+  headers: { 
+    'Content-Type': 'application/json',
+  },
+  body: JSON.stringify(entry),
+  credentials: 'include'
+});
+const result = await response.json();
 
-    if (!response.ok) {
-      const errorData = await response.json().catch(() => ({}));
-      throw new Error(errorData.message || 'Failed to save entry');
-    }
+if (!response.ok) {
+  const errorData = await response.json().catch(() => ({}));
+  throw new Error(errorData.message || 'Failed to save entry');
+}
 
 
 
@@ -113,9 +126,19 @@ document.addEventListener('DOMContentLoaded', () => {
 });
 
 
-    entryIdInput.value = '';
-    await loadEntries();
-    alert('Entry saved successfully!');
+
+entryIdInput.value = '';
+await loadEntries();
+let message = 'Entry saved successfully!';
+const analysisBox = document.getElementById('symptom-analysis');
+if (result.analysis?.recommendation) {
+  message += `<br><br><strong>Symptom Analysis:</strong><br>${result.analysis.recommendation}`;
+  analysisBox.innerHTML = `<strong>Symptom Analysis:</strong><br>${result.analysis.recommendation}`;
+  analysisBox.style.display = 'block';
+} else {
+  analysisBox.style.display = 'none';
+}
+showMessage('Entry saved successfully!');
     
   } catch (err) {
     console.error('Save error:', err);
