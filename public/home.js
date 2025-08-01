@@ -1,19 +1,16 @@
-// Check login token
 const token = localStorage.getItem('token');
 if (!token) {
   alert("Please log in first");
   window.location.href = "login.html";
 }
 
-// Load shared header
 fetch('header.html')
   .then(r => r.text())
   .then(html => {
     document.getElementById('header').innerHTML = html;
-    attachWeatherEvent(); // attach weather button after header loads
+    attachWeatherEvent(); 
   });
 
-// Live clock
 function updateClock() {
   const now = new Date();
   const timeStr = now.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', second: '2-digit' });
@@ -23,7 +20,6 @@ function updateClock() {
 setInterval(updateClock, 1000);
 updateClock();
 
-// Quote of the Day
 fetch('/api/quote')
   .then(res => res.json())
   .then(data => {
@@ -39,7 +35,6 @@ fetch('/api/quote')
     console.error('Quote fetch error:', err);
   });
 
-// Load today's medications and appointments
 async function loadTodayData() {
   const today = new Date().toISOString().split('T')[0];
   const contentDiv = document.getElementById('content');
@@ -80,71 +75,44 @@ async function loadTodayData() {
 }
 loadTodayData();
 
+function showGeoWeather() {
+  const geoDiv = document.getElementById("geo-weather");
+  if (!navigator.geolocation) {
+    geoDiv.textContent = "Geolocation is not supported by your browser.";
+    return;
+  }
+  geoDiv.textContent = "Detecting your location...";
+  navigator.geolocation.getCurrentPosition(success, error);
 
-// Weather
-navigator.geolocation.getCurrentPosition(success, error);
+  function success(position) {
+    const lat = position.coords.latitude;
+    const lon = position.coords.longitude;
+    const apiKey = '3652b8b54e92c83d871ca9705153b07f';
+    const url = `https://api.openweathermap.org/data/2.5/weather?lat=${lat}&lon=${lon}&units=metric&appid=${apiKey}`;
+    fetch(url)
+      .then(response => response.json())
+      .then(data => {
+        const city = data.name;
+        const temperature = data.main.temp;
+        const description = data.weather[0].description;
+        const iconCode = data.weather[0].icon;
+        const iconUrl = `https://openweathermap.org/img/wn/${iconCode}@2x.png`;
+        geoDiv.innerHTML = `
+          <h3>Weather at your location (${city})</h3>
+          <p><img src="${iconUrl}" alt="${description}"> ${temperature}°C, ${description}</p>
+        `;
+      })
+      .catch(() => {
+        geoDiv.textContent = "Error fetching your local weather.";
+      });
+  }
 
-function success(position) {
-  const latitude = position.coords.latitude;
-  const longitude = position.coords.longitude;
-  getWeather(latitude, longitude);
-}
-
-function error() {
-  document.getElementById("weather").textContent = "Unable to retrieve your location.";
-}
-
-function getWeather(lat, lon) {
-  const apiKey = '3652b8b54e92c83d871ca9705153b07f';
-  const url = `https://api.openweathermap.org/data/2.5/weather?lat=${lat}&lon=${lon}&units=metric&appid=${apiKey}`;
-  fetch(url)
-    .then(response => response.json())
-    .then(data => {
-      displayWeather(data);
-    })
-    .catch(error => {
-      document.getElementById("weather").textContent = "Error fetching weather data.";
-      console.error("Error fetching weather data:", error);
-    });
-}
-
-function displayWeather(data) {
-  const weatherDiv = document.getElementById("weather");
-  const city = data.name;
-  const temperature = data.main.temp;
-  const description = data.weather[0].description;
-  const iconCode = data.weather[0].icon;
-  const iconUrl = `https://openweathermap.org/img/wn/${iconCode}@2x.png`;
-  weatherDiv.innerHTML = `
-    <h3>${city}</h3>
-    <p><img src="${iconUrl}" alt="${description}"> ${temperature}°C, ${description}</p>
-  `;
-}
-// Weather Section
-async function loadWeatherChecks() {
-  try {
-    const res = await fetch('/api/weather-checks');
-    if (!res.ok) throw new Error('Failed to fetch weather data');
-    const weatherChecks = await res.json();
-    const weatherDiv = document.getElementById('weather');
-    if (!weatherChecks.length) {
-      weatherDiv.innerHTML = '<p>No weather data saved yet.</p>';
-      return;
-    }
-    weatherDiv.innerHTML = weatherChecks.map(w =>
-      `<div class="weather-card">
-        <h3>${w.location}</h3>
-        <p>🌡️ ${w.temperature}°C | 💧 ${w.humidity}%</p>
-        <p>${w.condition} - ${w.description}</p>
-        <small>Checked at: ${w.checked_at ? new Date(w.checked_at).toLocaleString() : ''}</small>
-      </div>`
-    ).join('');
-  } catch (e) {
-    document.getElementById('weather').innerHTML = '<p>Error loading weather data.</p>';
+  function error() {
+    geoDiv.textContent = "Unable to retrieve your location.";
   }
 }
+showGeoWeather();
 
-// Attach weather search logic
 function attachWeatherEvent() {
   const checkBtn = document.getElementById("checkBtn");
   const locationInput = document.getElementById("location");
@@ -195,3 +163,28 @@ function attachWeatherEvent() {
     }
   });
 }
+
+async function loadWeatherChecks() {
+  try {
+    const res = await fetch('/api/weather-checks');
+    if (!res.ok) throw new Error('Failed to fetch weather data');
+    const weatherChecks = await res.json();
+    const weatherDiv = document.getElementById('weather');
+    if (!weatherChecks.length) {
+      weatherDiv.innerHTML = '<p>No weather data saved yet.</p>';
+      return;
+    }
+    weatherDiv.innerHTML = weatherChecks.map(w =>
+      `<div class="weather-card">
+        <h3>${w.location}</h3>
+        <p>🌡️ ${w.temperature}°C | 💧 ${w.humidity}%</p>
+        <p>${w.condition} - ${w.description}</p>
+        <small>Checked at: ${w.checked_at ? new Date(w.checked_at).toLocaleString() : ''}</small>
+      </div>`
+    ).join('');
+  } catch (e) {
+    document.getElementById('weather').innerHTML = '<p></p>';
+  }
+}
+
+document.addEventListener("DOMContentLoaded", loadWeatherChecks);
