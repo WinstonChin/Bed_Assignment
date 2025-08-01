@@ -70,6 +70,7 @@ app.delete("/api/appointments/:id", authenticate, validateAppointmentID, appoint
 app.get('/api/moods/:userId', moodController.getMoodLogs);
 app.post('/api/moods', moodController.logMood);
 app.delete('/api/moods/:id', moodController.deleteMoodLog);
+app.put('/api/moods/:id', moodController.updateMoodLog);
 
 //Emergency Info Card//
 app.get('/api/emergency-info/:userId', emergencyController.getEmergencyInfo);

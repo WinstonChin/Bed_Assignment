@@ -62,11 +62,12 @@ async function loadMoodLogs() {
   container.innerHTML = logs.map(log => {
     const dateTime = new Date(log.LogTimestamp).toLocaleString('en-GB');
     return `
-      <li>
-        <strong>${dateTime}</strong> - ${log.MoodName}: ${log.Note}
-        <button onclick="deleteMood(${log.LogID})" style="margin-left:10px">🗑</button>
-      </li>
-    `;
+  <li>
+    <strong>${dateTime}</strong> - ${log.MoodName}: ${log.Note}
+    <button onclick="deleteMood(${log.LogID})">🗑</button>
+    <button onclick="editMood(${log.LogID}, '${log.Note.replace(/'/g, "\\'")}', ${log.MoodID})">✏️</button>
+  </li>
+`;
   }).join('');
 }
 
@@ -93,6 +94,44 @@ async function deleteMood(logId) {
     console.error(err);
   }
 }
+
+function editMood(logId, currentNote, currentMoodId) {
+  const container = document.getElementById("moodLogs");
+  container.innerHTML += `
+    <div id="editForm">
+      <h4>Edit Mood</h4>
+      <select id="editMoodSelect">
+        <option value="1" ${currentMoodId === 1 ? 'selected' : ''}>😊</option>
+        <option value="2" ${currentMoodId === 2 ? 'selected' : ''}>😔</option>
+        <option value="3" ${currentMoodId === 3 ? 'selected' : ''}>😠</option>
+        <option value="4" ${currentMoodId === 4 ? 'selected' : ''}>😰</option>
+      </select><br><br>
+      <textarea id="editNote">${currentNote}</textarea><br>
+      <button onclick="saveEditMood(${logId})">Save</button>
+      <button onclick="cancelEdit()">Cancel</button>
+    </div>
+  `;
+}
+
+function cancelEdit() {
+  loadMoodLogs();
+}
+
+async function saveEditMood(logId) {
+  const moodId = document.getElementById("editMoodSelect").value;
+  const note = document.getElementById("editNote").value;
+
+  const res = await fetch(`/api/moods/${logId}`, {
+    method: 'PUT',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ moodId, note })
+  });
+
+  const data = await res.json();
+  alert(data.message);
+  loadMoodLogs();
+}
+
 
 document.getElementById('addPlanner').addEventListener('click', async () => {
   const activity = document.getElementById('activity').value;

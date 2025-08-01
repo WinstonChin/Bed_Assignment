@@ -57,10 +57,35 @@ const deleteMoodLog = async (req, res) => {
   }
 };
 
+//UPDATE A MOOD LOG by ID
+const updateMoodLog = async (req, res) => {
+  try {
+    const { id } = req.params;
+    const { moodId, note } = req.body;
+
+    const pool = await sql.connect(db);
+    await pool.request()
+      .input('id', sql.Int, id)
+      .input('moodId', sql.Int, moodId)
+      .input('note', sql.Text, note)
+      .query(`
+        UPDATE MoodLogs
+        SET MoodID = @moodId,
+            Note = @note
+        WHERE LogID = @id
+      `);
+
+    res.json({ message: "Mood log updated." });
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+};
+
 module.exports = {
   getMoodLogs,
   logMood,
-  deleteMoodLog 
+  deleteMoodLog,
+  updateMoodLog
 };
 
 
