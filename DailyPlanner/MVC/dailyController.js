@@ -9,7 +9,7 @@ const getMoodLogs = async (req, res) => {
         const result = await pool.request()
             .input('userId', sql.Int, userId)
             .query(`
-                SELECT m.MoodName, ml.Note, ml.LogTimestamp 
+                SELECT ml.LogID, m.MoodName, ml.Note, ml.LogTimestamp
                 FROM MoodLogs ml
                 JOIN Moods m ON ml.MoodID = m.MoodID
                 WHERE ml.UserID = @userId
@@ -41,10 +41,28 @@ const logMood = async (req, res) => {
     }
 };
 
-module.exports = {
-    getMoodLogs,
-    logMood
+// DELETE a mood log by ID
+const deleteMoodLog = async (req, res) => {
+  try {
+    const { id } = req.params;
+
+    const pool = await sql.connect(db);
+    await pool.request()
+      .input('id', sql.Int, id)
+      .query('DELETE FROM MoodLogs WHERE LogID = @id');
+
+    res.json({ message: "Mood log deleted." });
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
 };
+
+module.exports = {
+  getMoodLogs,
+  logMood,
+  deleteMoodLog 
+};
+
 
 
 

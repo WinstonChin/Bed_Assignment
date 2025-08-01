@@ -60,9 +60,38 @@ async function loadMoodLogs() {
 
   const container = document.getElementById("moodLogs");
   container.innerHTML = logs.map(log => {
-    const dateTime = new Date(log.LogTimestamp).toLocaleString('en-GB'); // dd/mm/yyyy, HH:mm
-    return `<li><strong>${dateTime}</strong> - ${log.MoodName}: ${log.Note}</li>`;
+    const dateTime = new Date(log.LogTimestamp).toLocaleString('en-GB');
+    return `
+      <li>
+        <strong>${dateTime}</strong> - ${log.MoodName}: ${log.Note}
+        <button onclick="deleteMood(${log.LogID})" style="margin-left:10px">🗑</button>
+      </li>
+    `;
   }).join('');
+}
+
+async function deleteMood(logId) {
+  const confirmed = confirm("Are you sure you want to delete this mood log?");
+  if (!confirmed) return;
+
+  try {
+    const res = await fetch(`/api/moods/${logId}`, {
+      method: 'DELETE'
+    });
+
+    const data = await res.json();
+
+    if (res.ok) {
+      alert(data.message);
+      loadMoodLogs(); // refresh after deletion
+    } else {
+      alert("Delete failed: " + data.error);
+    }
+
+  } catch (err) {
+    alert("Request failed: " + err.message);
+    console.error(err);
+  }
 }
 
 document.getElementById('addPlanner').addEventListener('click', async () => {
@@ -154,4 +183,3 @@ function formatDateTime(rawDateTime) {
   const match = rawDateTime.match(/T(\d{2}:\d{2})/);
   return match ? match[1] : rawDateTime;
 }
-
