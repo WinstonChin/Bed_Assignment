@@ -52,6 +52,32 @@
     .content-section ul { list-style-type: none; padding: 0; }
     .content-section li { font-size: 17px; padding: 6px 0; color: #555; }
     #weather-section { max-width: 800px; margin-bottom: 30px; width: 100%; }
+    .weather-card {
+      background: #f7f3ff;
+      border-radius: 12px;
+      padding: 18px 20px;
+      margin-bottom: 16px;
+      box-shadow: 0 2px 8px rgba(120, 80, 180, 0.07);
+    }
+    .weather-card h3 { margin: 0 0 8px 0; }
+    .weather-card p { margin: 4px 0; }
+    .weather-card small { color: #888; }
+    #weather-form {
+      margin-bottom: 20px;
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      align-items: center;
+    }
+    #weather-form input, #weather-form button {
+      font-size: 1rem;
+      padding: 0.5rem;
+    }
+    #weather-result {
+      margin-bottom: 18px;
+      color: #4b2caf;
+      font-weight: bold;
+    }
     footer {
       background: linear-gradient(90deg, #c9a7f4, #a3c8f6);
       color: white;
@@ -69,32 +95,40 @@
 
   <div id="header"></div>
 
-  <main>
-    <div id="clock">Loading current time...</div>
+<main>
+  <div id="clock">Loading current time...</div>
 
-    <div id="weather-section" class="content-section">
-      <h2>🌤️ Today's Weather</h2>
-      <div id="weather"></div>
+  <div id="geo-weather-section" class="content-section">
+    <h2>Weather At Your Location</h2>
+    <div id="geo-weather"></div>
+  </div>
 
-      <div id="quote-section" class="content-section">
-  <h2>💬 Quote of the Day</h2>
-  <p id="quote-text">Loading inspirational quote...</p>
-  <p id="quote-author" style="font-style: italic;"></p>
-</div>
+  <div id="weather-section" class="content-section">
+    <h2>🌤️ Search & Saved Weather</h2>
+    <form id="weather-form">
+      <label for="location" style="font-weight:bold;">Location:</label>
+      <input type="text" id="location" placeholder="e.g., Singapore" required />
+      <button type="submit" id="checkBtn">Check & Save Weather</button>
+    </form>
+    <div id="weather-result"></div>
+    <div id="weather"></div>
+  </div>
 
-    </div>
+  <div id="quote-section" class="content-section">
+    <h2>💬 Quote of the Day</h2>
+    <p id="quote-text">Loading inspirational quote...</p>
+    <p id="quote-author" style="font-style: italic;"></p>
+  </div>
 
-    <div id="content" class="content-section">
-      <h2>Welcome to SeniorCare</h2>
-      <p>Tap a button above to get started 🧭</p>
-    </div>
-    
-  </main>
+  <div id="content" class="content-section">
+    <h2>Welcome to SeniorCare</h2>
+    <p>Tap a button above to get started 🧭</p>
+  </div>
+</main>
 
-  <footer>
-    <p>© 2025 SeniorCare. Stay joyful, stay well 💜</p>
-  </footer>
+<footer>
+  <p>© 2025 SeniorCare. Stay joyful, stay well 💜</p>
+</footer>
 
-  <script src="home.js"></script>
-</body>
-</html>
+<script src="weather.js"></script>
+<script src="home.js"></script>
