@@ -8,7 +8,10 @@ if (!token) {
 // Load shared header
 fetch('header.html')
   .then(r => r.text())
-  .then(html => document.getElementById('header').innerHTML = html);
+  .then(html => {
+    document.getElementById('header').innerHTML = html;
+    attachWeatherEvent(); // attach weather button after header loads
+  });
 
 // Live clock
 function updateClock() {
@@ -19,6 +22,7 @@ function updateClock() {
 }
 setInterval(updateClock, 1000);
 updateClock();
+
 // Quote of the Day
 fetch('/api/quote')
   .then(res => res.json())
@@ -34,7 +38,6 @@ fetch('/api/quote')
     document.getElementById('quote-author').textContent = '— SeniorCare';
     console.error('Quote fetch error:', err);
   });
-
 
 // Load today's medications and appointments
 async function loadTodayData() {
@@ -77,6 +80,7 @@ async function loadTodayData() {
 }
 loadTodayData();
 
+
 // Weather
 navigator.geolocation.getCurrentPosition(success, error);
 
@@ -115,4 +119,79 @@ function displayWeather(data) {
     <h3>${city}</h3>
     <p><img src="${iconUrl}" alt="${description}"> ${temperature}°C, ${description}</p>
   `;
+}
+// Weather Section
+async function loadWeatherChecks() {
+  try {
+    const res = await fetch('/api/weather-checks');
+    if (!res.ok) throw new Error('Failed to fetch weather data');
+    const weatherChecks = await res.json();
+    const weatherDiv = document.getElementById('weather');
+    if (!weatherChecks.length) {
+      weatherDiv.innerHTML = '<p>No weather data saved yet.</p>';
+      return;
+    }
+    weatherDiv.innerHTML = weatherChecks.map(w =>
+      `<div class="weather-card">
+        <h3>${w.location}</h3>
+        <p>🌡️ ${w.temperature}°C | 💧 ${w.humidity}%</p>
+        <p>${w.condition} - ${w.description}</p>
+        <small>Checked at: ${w.checked_at ? new Date(w.checked_at).toLocaleString() : ''}</small>
+      </div>`
+    ).join('');
+  } catch (e) {
+    document.getElementById('weather').innerHTML = '<p>Error loading weather data.</p>';
+  }
+}
+
+// Attach weather search logic
+function attachWeatherEvent() {
+  const checkBtn = document.getElementById("checkBtn");
+  const locationInput = document.getElementById("location");
+  const resultDiv = document.getElementById("weather-result");
+
+  if (!checkBtn || !locationInput || !resultDiv) {
+    console.warn("Weather elements not found on page.");
+    return;
+  }
+
+  checkBtn.addEventListener("click", async function (e) {
+    e.preventDefault();
+    const location = locationInput.value.trim();
+    if (!location) {
+      alert("Please enter a location.");
+      return;
+    }
+
+    resultDiv.innerHTML = "Loading...";
+    resultDiv.style.display = "block";
+
+    const apiKey = "41ae23560069d0493aadc59947482508";
+    const endpoint = `https://api.openweathermap.org/data/2.5/weather?q=${encodeURIComponent(location)}&appid=${apiKey}&units=metric`;
+
+    try {
+      const response = await fetch(endpoint);
+      const data = await response.json();
+
+      if (!response.ok) {
+        throw new Error(data.message || "Unable to fetch weather data.");
+      }
+
+      const weather = {
+        temperature: data.main.temp,
+        humidity: data.main.humidity,
+        description: data.weather[0].description,
+        location: `${data.name}, ${data.sys.country}`,
+      };
+
+      resultDiv.innerHTML = `
+        <h3>Weather in ${weather.location}</h3>
+        <p><strong>Temperature:</strong> ${weather.temperature}°C</p>
+        <p><strong>Humidity:</strong> ${weather.humidity}%</p>
+        <p><strong>Condition:</strong> ${weather.description}</p>
+      `;
+    } catch (error) {
+      resultDiv.innerHTML = `<p style="color:red;">Error: ${error.message}</p>`;
+    }
+  });
 }
