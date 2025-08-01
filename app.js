@@ -28,8 +28,6 @@ const { validateAppointment, validateAppointmentID } = require('./Appointment/MV
 const { validateEmergencyInfo } = require('./Contacts/MVC/emergencyValidation');
 const { validateActivity} = require('./Daily-Planner/MVC/dailyPlannerValidation');
 
-
-
 const app = express();
 const port = process.env.PORT || 3000;
 
