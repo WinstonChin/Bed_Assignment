@@ -17,6 +17,7 @@ const journalController = require('./Health Journal/MVC/journalController');
 const moodController = require('./DailyPlanner/MVC/dailyController'); 
 const emergencyController = require('./Contacts/MVC/emergencyController');
 const weatherController = require("./Weather Checker/MVC/weatherController");
+const drugController = require('./DrugAnalyser/MVC/drugAnalyserController');
 
 // Import validation middleware
 const { validateLogin } = require('./Login/MVC/loginValidation');
@@ -109,11 +110,67 @@ app.get("/api/weather", weatherController.getWeatherChecks);
 app.put("/api/weather/:id", weatherController.updateWeatherEntry);
 app.delete("/api/weather/:id", weatherController.deleteWeatherEntry);
 
+//Drug Analyser
+app.post('/drug-analyser', drugController.analyzeDrugs);
+
+
+let cachedDrugNames = [];
+let lastFetchTime = 0;
+
+// Fetch and cache drug names from OpenFDA (refresh every 12 hours)
+async function fetchDrugNames() {
+  const now = Date.now();
+  if (cachedDrugNames.length > 0 && now - lastFetchTime < 12 * 60 * 60 * 1000) {
+    return cachedDrugNames;
+  }
+  try {
+    const res = await axios.get('https://api.fda.gov/drug/label.json?count=openfda.generic_name.exact');
+    cachedDrugNames = res.data.results.map(r => r.term.toLowerCase());
+    lastFetchTime = now;
+    return cachedDrugNames;
+  } catch (err) {
+    console.error('Failed to fetch drug names from OpenFDA:', err.message);
+    // fallback to previous cache or empty array
+    return cachedDrugNames;
+  }
+}
+
+app.get('/drug-suggest', async (req, res) => {
+  const q = (req.query.q || '').toLowerCase();
+  if (!q) return res.json([]);
+  const drugNames = await fetchDrugNames();
+  // Fuzzy match: substring or Levenshtein distance <= 2
+  const suggestions = drugNames.filter(name =>
+    name.includes(q) ||
+    getLevenshteinDistance(name, q) <= 2
+  ).slice(0, 10);
+  res.json(suggestions);
+});
+// Simple Levenshtein distance for fuzzy matching
+function getLevenshteinDistance(a, b) {
+  if (a.length === 0) return b.length;
+  if (b.length === 0) return a.length;
+  const matrix = [];
+  for (let i = 0; i <= b.length; i++) matrix[i] = [i];
+  for (let j = 0; j <= a.length; j++) matrix[0][j] = j;
+  for (let i = 1; i <= b.length; i++) {
+    for (let j = 1; j <= a.length; j++) {
+      if (b.charAt(i - 1) === a.charAt(j - 1)) {
+        matrix[i][j] = matrix[i - 1][j - 1];
+      } else {
+        matrix[i][j] = Math.min(
+          matrix[i - 1][j - 1] + 1, // substitution
+          matrix[i][j - 1] + 1,     // insertion
+          matrix[i - 1][j] + 1      // deletion
+        );
+      }
+    }
+  }
+  return matrix[b.length][a.length];
+}
 
 
 //Quote of the day
-
-
 app.get('/api/quote', async (req, res) => {
   try {
     const response = await axios.get('https://zenquotes.io/api/today'); // or /random
@@ -144,6 +201,7 @@ app.use(express.static(path.join(__dirname, 'Journal')));
 app.use(express.static(path.join(__dirname, 'DailyPlanner')));
 app.use(express.static(path.join(__dirname, 'Contacts')));
 app.use(express.static(path.join(__dirname, 'Profile')));
+app.use(express.static(path.join(__dirname, 'DrugAnalyser')));
 
 
 
