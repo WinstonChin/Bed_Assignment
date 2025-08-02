@@ -7,7 +7,7 @@ const options = {
     info: {
       title: 'BED Assignment API',
       version: '1.0.0',
-      description: 'API documentation for Health Journal, Nutrition Lookup, Drug Analyser, etc.'
+      description: 'API documentation for Health Journal, Nutrition Lookup, Drug Analyser, Medicine, Login, Signup, etc.'
     },
     servers: [
       { url: 'http://localhost:3000' }
@@ -28,6 +28,7 @@ const options = {
             photo_url: { type: 'string', nullable: true, example: '/uploads/photo.jpg' }
           }
         }
+        // Add more schemas here as needed
       }
     }
   },
@@ -35,55 +36,13 @@ const options = {
     './Health Journal/MVC/*.js',
     './DrugAnalyser/MVC/*.js',
     './Nutrition Lookup/*.js',
+    './Medicine/MVC/*.js',
+    './Login/MVC/*.js',
+    './SignUp/MVC/*.js',
     './app.js'
   ]
 };
+
 const swaggerSpec = swaggerJSDoc(options);
 
 module.exports = { swaggerUi, swaggerSpec };
-
-const swaggerAutogen = require('swagger-autogen')();
-const doc = {
-  info: {
-    title: 'BED Assignment API',
-    description: 'API documentation for Medicine, Login, Signup, etc.'
-  },
-  host: 'localhost:3000',
-  schemes: ['http'],
-  components: {
-    schemas: {
-      LoginRequest: {
-        email: "user@example.com",
-        password: "secure123"
-      },
-      SignupRequest: {
-        name: "Jane Doe",
-        email: "user@example.com",
-        password: "secure123",
-        confirmPassword: "secure123",
-        dateOfBirth: "2000-01-01",
-        profilePicUrl: "http://example.com/photo.jpg"
-      },
-      Meds: {
-        id: 1,
-        userId: 123,
-        medication: "Ibuprofen",
-        time: "09:00",
-        frequency: "Daily",
-        startDate: "2025-08-01",
-        endDate: "2025-08-07"
-      }
-    }
-  }
-};
-
-
-const outputFile = './swagger-output.json';
-const endpointsFiles = [
-  './Medicine/MVC/medsController.js',
-  './Login/MVC/loginController.js',
-  './SignUp/MVC/signupController.js',
-  './app.js'
-];
-
-swaggerAutogen(outputFile, endpointsFiles, doc);

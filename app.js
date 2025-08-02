@@ -4,8 +4,7 @@ const sql = require('mssql');
 const cors = require('cors');
 require('dotenv').config();
 const axios = require('axios');
-const swaggerUi = require('swagger-ui-express');
-const swaggerDocument = require('./swagger-output.json');
+
 // Database Configuration
 const dbConfig = require("./dbConfig");
 
@@ -36,7 +35,6 @@ const { validateMoodLog } = require('./DailyPlanner/MVC/dailyValidation');
 
 const app = express();
 app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerSpec));
-app.use("api-docs", swaggerUi.serve, swaggerUi.setup(swaggerDocument));
 const port = process.env.PORT || 3000;
 
 // Middleware
@@ -68,6 +66,23 @@ app.post('/signup', validateSignup, signupUser);
  *     responses:
  *       200:
  *         description: Success
+ *//**
+ * @swagger
+ * /api/meds:
+ *   get:
+ *     summary: Get all medicine reminders for a user
+ *     tags: [Medicine]
+ *     security:
+ *       - bearerAuth: []
+ *     responses:
+ *       200:
+ *         description: Array of medicine reminders
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: array
+ *               items:
+ *                 $ref: '#/components/schemas/MedicineReminder'
  *       500:
  *         description: Failed to fetch meds
  */
@@ -79,6 +94,8 @@ app.get("/api/meds", authenticate, medsController.getAllDates);
  *   get:
  *     summary: Get a medicine reminder by ID
  *     tags: [Medicine]
+ *     security:
+ *       - bearerAuth: []
  *     parameters:
  *       - in: path
  *         name: id
@@ -88,12 +105,172 @@ app.get("/api/meds", authenticate, medsController.getAllDates);
  *         description: Reminder ID
  *     responses:
  *       200:
- *         description: Success
+ *         description: Medicine reminder object
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/MedicineReminder'
  *       404:
  *         description: Reminder not found or unauthorized
  *       500:
  *         description: Failed to fetch reminder
  */
+app.get("/api/meds/:id", authenticate, validateDateID, medsController.getDateById);
+
+/**
+ * @swagger
+ * /api/meds:
+ *   post:
+ *     summary: Create a new medicine reminder
+ *     tags: [Medicine]
+ *     security:
+ *       - bearerAuth: []
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             $ref: '#/components/schemas/MedicineReminderInput'
+ *     responses:
+ *       201:
+ *         description: Reminder added
+ *       500:
+ *         description: Failed to create reminder
+ */
+app.post("/api/meds", authenticate, validateDate, medsController.createDate);
+
+/**
+ * @swagger
+ * /api/meds/{id}:
+ *   put:
+ *     summary: Update a medicine reminder
+ *     tags: [Medicine]
+ *     security:
+ *       - bearerAuth: []
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         schema:
+ *           type: integer
+ *         required: true
+ *         description: Reminder ID
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             $ref: '#/components/schemas/MedicineReminderInput'
+ *     responses:
+ *       200:
+ *         description: Reminder updated
+ *       404:
+ *         description: Reminder not found or unauthorized
+ *       500:
+ *         description: Failed to update reminder
+ */
+app.put("/api/meds/:id", authenticate, validateDateID, validateDate, medsController.updateDate);
+
+/**
+ * @swagger
+ * /api/meds/{id}:
+ *   delete:
+ *     summary: Delete a medicine reminder
+ *     tags: [Medicine]
+ *     security:
+ *       - bearerAuth: []
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         schema:
+ *           type: integer
+ *         required: true
+ *         description: Reminder ID
+ *     responses:
+ *       200:
+ *         description: Reminder deleted
+ *       404:
+ *         description: Reminder not found or unauthorized
+ *       500:
+ *         description: Failed to delete reminder
+ */
+app.delete("/api/meds/:id", authenticate, validateDateID, medsController.deleteDate);/**
+ * @swagger
+ * /login:
+ *   post:
+ *     summary: Log in a user
+ *     tags: [Auth]
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             properties:
+ *               email:
+ *                 type: string
+ *                 example: "test@example.com"
+ *               password:
+ *                 type: string
+ *                 example: "pass123"
+ *     responses:
+ *       200:
+ *         description: Login successful
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 message:
+ *                   type: string
+ *                 token:
+ *                   type: string
+ *                 userId:
+ *                   type: integer
+ *                 name:
+ *                   type: string
+ *                 email:
+ *                   type: string
+ *                 profilePicUrl:
+ *                   type: string
+ *       401:
+ *         description: Invalid credentials
+ *       500:
+ *         description: Login failed
+ */
+app.post('/login', validateLogin, loginUser);
+
+/**
+ * @swagger
+ * /signup:
+ *   post:
+ *     summary: Register a new user
+ *     tags: [Auth]
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             properties:
+ *               name:
+ *                 type: string
+ *                 example: "Test User"
+ *               email:
+ *                 type: string
+ *                 example: "test@example.com"
+ *               password:
+ *                 type: string
+ *                 example: "pass123"
+ *     responses:
+ *       201:
+ *         description: User created successfully
+ *       409:
+ *         description: User already exists
+ *       500:
+ *         description: Signup failed
+ */
+app.post('/signup', validateSignup, signupUser);
+app.get("/api/meds", authenticate, medsController.getAllDates);
 app.get("/api/meds/:id", authenticate, validateDateID, medsController.getDateById);
 app.post("/api/meds", authenticate, validateDate, medsController.createDate);
 app.put("/api/meds/:id", authenticate, validateDateID, validateDate, medsController.updateDate);
