@@ -8,6 +8,7 @@ const axios = require('axios');
 // Database Configuration
 const dbConfig = require("./dbConfig");
 
+
 // Import Controllers - make sure these paths are correct
 const { loginUser } = require('./Login/MVC/loginController');
 const { signupUser } = require('./SignUp/MVC/signupController');
@@ -27,8 +28,11 @@ const { authenticate } = require("./Login/authenticate");
 const { validateAppointment, validateAppointmentID } = require('./Appointment/MVC/appointmentValidation');
 const { validateEmergencyInfo } = require('./Contacts/MVC/emergencyValidation');
 const { validateActivity} = require('./Daily-Planner/MVC/dailyPlannerValidation');
+const { swaggerUi, swaggerSpec } = require('./swagger');
+
 
 const app = express();
+app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerSpec));
 const port = process.env.PORT || 3000;
 
 // Middleware
@@ -112,7 +116,42 @@ app.put("/api/weather/:id", weatherController.updateWeatherEntry);
 app.delete("/api/weather/:id", weatherController.deleteWeatherEntry);
 
 //Drug Analyser
+/**
+ * @swagger
+ * /drug-analyser:
+ *   post:
+ *     summary: Analyse drug interactions and effects
+ *     tags: [Drug Analyser]
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             properties:
+ *               medications:
+ *                 type: array
+ *                 items:
+ *                   type: string
+ *     responses:
+ *       200:
+ *         description: Drug analysis result
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 effects:
+ *                   type: array
+ *                   items:
+ *                     type: string
+ *                 warnings:
+ *                   type: string
+ *                 precautions:
+ *                   type: string
+ */
 app.post('/drug-analyser', drugController.analyzeDrugs);
+
 
 
 let cachedDrugNames = [];
@@ -214,15 +253,199 @@ app.post('/signup', signupUser);
 
 
 // Health Journal Routes
+/**
+ * @swagger
+ * /health-journal/entries:
+ *   get:
+ *     summary: Get all health journal entries
+ *     tags: [Health Journal]
+ *     responses:
+ *       200:
+ *         description: Array of all health journal entries
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: array
+ *               items:
+ *                 $ref: '#/components/schemas/HealthJournalEntry'
+ */
 app.get('/health-journal/entries', journalController.GetAllEntries);
-app.get('/health-journal/search', journalController.SearchEntries); // <-- MOVE THIS UP
+/**
+ * @swagger
+ * /health-journal/search:
+ *   get:
+ *     summary: Search health journal entries by date, pain level, or symptoms
+ *     tags: [Health Journal]
+ *     parameters:
+ *       - in: query
+ *         name: date
+ *         schema:
+ *           type: string
+ *           format: date
+ *         required: false
+ *         description: Filter by entry date (YYYY-MM-DD)
+ *       - in: query
+ *         name: pain_level
+ *         schema:
+ *           type: integer
+ *         required: false
+ *         description: Filter by pain level (0-10)
+ *       - in: query
+ *         name: symptoms
+ *         schema:
+ *           type: string
+ *         required: false
+ *         description: Filter by symptoms (partial match)
+ *     responses:
+ *       200:
+ *         description: Array of matching health journal entries
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: array
+ *               items:
+ *                 $ref: '#/components/schemas/HealthJournalEntry'
+ */
+app.get('/health-journal/search', journalController.SearchEntries); 
+/**
+ * @swagger
+ * /health-journal/entries:
+ *   get:
+ *     summary: Get all health journal entries
+ *     tags: [Health Journal]
+ *     responses:
+ *       200:
+ *         description: Array of all health journal entries
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: array
+ *               items:
+ *                 $ref: '#/components/schemas/HealthJournalEntry'
+ */ 
 app.get('/health-journal', journalController.GetAllEntries);
+/**
+ * @swagger
+ * /health-journal/{id}:
+ *   get:
+ *     summary: Get a single health journal entry by ID
+ *     tags: [Health Journal]
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         schema:
+ *           type: integer
+ *         required: true
+ *         description: Entry ID
+ *     responses:
+ *       200:
+ *         description: Health journal entry object
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/HealthJournalEntry'
+ *       404:
+ *         description: Entry not found
+ */
 app.get('/health-journal/:id', journalController.GetEntryById);
+/**
+ * @swagger
+ * /health-journal:
+ *   post:
+ *     summary: Create a new health journal entry
+ *     tags: [Health Journal]
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         multipart/form-data:
+ *           schema:
+ *             type: object
+ *             properties:
+ *               date:
+ *                 type: string
+ *                 format: date
+ *               pain_level:
+ *                 type: integer
+ *               symptoms:
+ *                 type: string
+ *               photo:
+ *                 type: string
+ *                 format: binary
+ *     responses:
+ *       201:
+ *         description: Health journal entry created successfully
+ */
 app.post('/health-journal', journalController.upload.single('photo'), journalController.CreateEntry);
+/**
+ * @swagger
+ * /health-journal/{id}:
+ *   put:
+ *     summary: Update an existing health journal entry
+ *     tags: [Health Journal]
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         schema:
+ *           type: integer
+ *         required: true
+ *         description: Entry ID
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         multipart/form-data:
+ *           schema:
+ *             type: object
+ *             properties:
+ *               date:
+ *                 type: string
+ *                 format: date
+ *               pain_level:
+ *                 type: integer
+ *               symptoms:
+ *                 type: string
+ *               photo:
+ *                 type: string
+ *                 format: binary
+ *     responses:
+ *       200:
+ *         description: Health journal entry updated successfully
+ */
 app.put('/health-journal/:id', journalController.upload.single('photo'), journalController.UpdateEntry);
+/**
+ * @swagger
+ * /health-journal/{id}:
+ *   delete:
+ *     summary: Delete a health journal entry by ID
+ *     tags: [Health Journal]
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         schema:
+ *           type: integer
+ *         required: true
+ *         description: Entry ID
+ *     responses:
+ *       204:
+ *         description: Health journal entry deleted successfully
+ */
 app.delete('/health-journal/:id', journalController.DeleteEntry);
 
 //Nutrition Lookup Routes
+
+/**
+ * @swagger
+ * /nutrition-lookup:
+ *   get:
+ *     summary: Serve the Nutrition Lookup HTML page
+ *     tags: [Nutrition Lookup]
+ *     responses:
+ *       200:
+ *         description: Nutrition Lookup HTML page
+ *         content:
+ *           text/html:
+ *             schema:
+ *               type: string
+ */
 app.get('/nutrition-lookup', (req, res) => {
   res.sendFile(path.join(__dirname, 'Nutrition Lookup', 'nutrition.html'));
 });
