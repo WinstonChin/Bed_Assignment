@@ -63,11 +63,120 @@ app.put("/api/meds/:id", authenticate, validateDateID, validateDate, medsControl
 app.delete("/api/meds/:id", authenticate, validateDateID, medsController.deleteDate);
 
 
-
+/**
+ * @swagger
+ * /api/appointments:
+ *   get:
+ *     summary: Get all appointments
+ *     tags: [Appointments]
+ *     security:
+ *       - bearerAuth: []
+ *     responses:
+ *       200:
+ *         description: List of all appointments
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: array
+ *               items:
+ *                 $ref: '#/components/schemas/Appointment'
+ */
 app.get("/api/appointments", authenticate, appointmentController.getAllAppointments);
+/**
+ * @swagger
+ * /api/appointments/{id}:
+ *   get:
+ *     summary: Get appointment by ID
+ *     tags: [Appointments]
+ *     security:
+ *       - bearerAuth: []
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         schema:
+ *           type: integer
+ *         required: true
+ *         description: Appointment ID
+ *     responses:
+ *       200:
+ *         description: Appointment details
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/Appointment'
+ *       404:
+ *         description: Appointment not found
+ */
 app.get("/api/appointments/:id", authenticate, validateAppointmentID, appointmentController.getAppointmentById);
+/**
+ * @swagger
+ * /api/appointments:
+ *   post:
+ *     summary: Create a new appointment
+ *     tags: [Appointments]
+ *     security:
+ *       - bearerAuth: []
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             $ref: '#/components/schemas/AppointmentInput'
+ *     responses:
+ *       201:
+ *         description: Appointment created
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/Appointment'
+ */
 app.post("/api/appointments", authenticate, validateAppointment, appointmentController.createAppointment);
+/**
+ * @swagger
+ * /api/appointments/{id}:
+ *   put:
+ *     summary: Update an existing appointment
+ *     tags: [Appointments]
+ *     security:
+ *       - bearerAuth: []
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         schema:
+ *           type: integer
+ *         required: true
+ *         description: Appointment ID
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             $ref: '#/components/schemas/AppointmentInput'
+ *     responses:
+ *       200:
+ *         description: Appointment updated
+ */
 app.put("/api/appointments/:id", authenticate, validateAppointmentID, validateAppointment, appointmentController.updateAppointment);
+/**
+ * @swagger
+ * /api/appointments/{id}:
+ *   delete:
+ *     summary: Delete an appointment
+ *     tags: [Appointments]
+ *     security:
+ *       - bearerAuth: []
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         schema:
+ *           type: integer
+ *         required: true
+ *         description: Appointment ID
+ *     responses:
+ *       204:
+ *         description: Appointment deleted successfully
+ */
+
 app.delete("/api/appointments/:id", authenticate, validateAppointmentID, appointmentController.deleteAppointment);
 
 //Mood Tracker//
