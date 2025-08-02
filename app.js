@@ -30,6 +30,8 @@ const { validateEmergencyInfo } = require('./Contacts/MVC/emergencyValidation');
 const { validateActivity} = require('./Daily-Planner/MVC/dailyPlannerValidation');
 const { swaggerUi, swaggerSpec } = require('./swagger');
 
+const { validateMoodLog } = require('./DailyPlanner/MVC/dailyValidation');
+
 
 const app = express();
 app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerSpec));
@@ -73,6 +75,7 @@ app.get('/api/moods/:userId', moodController.getMoodLogs);
 app.post('/api/moods', moodController.logMood);
 app.delete('/api/moods/:id', moodController.deleteMoodLog);
 app.put('/api/moods/:id', moodController.updateMoodLog);
+app.post('/api/moods', validateMoodLog, moodController.logMood);
 
 //Emergency Info Card//
 app.get('/api/emergency-info/:userId', emergencyController.getEmergencyInfo);
