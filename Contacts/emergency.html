@@ -64,11 +64,10 @@
       text-align: left;
     }
 
-    /* Panic Button Styling */
     #panicButtonContainer {
       margin-top: 30px;
-      padding: 0 20px; /* Matching the card's padding */
-      max-width: 800px; /* Ensure it matches the card's width */
+      padding: 0 20px;
+      max-width: 800px;
       margin-left: auto;
       margin-right: auto;
     }
@@ -79,7 +78,7 @@
       color: white;
       border: none;
       border-radius: 5px;
-      width: 100%; /* Same width as the card's inner content */
+      width: 100%;
       font-size: 18px;
       cursor: pointer;
     }
@@ -91,7 +90,6 @@
 </head>
 <body>
 
-  <!-- Load Header -->
   <div id="header"></div>
 
   <main>
@@ -118,19 +116,22 @@
       <div class="info-display" id="infoDisplay"></div>
     </div>
 
-    <!-- Panic Button Container -->
+    <!-- Panic Button -->
     <div id="panicButtonContainer">
       <button id="panicButton" onclick="triggerPanicAlert()">Panic Button</button>
+      <div id="emergencyDisplay" style="margin-top: 20px;"></div>
+
+
+      
     </div>
   </main>
 
   <script>
-    // Load reusable header
     fetch('header.html')
       .then(res => res.text())
       .then(html => document.getElementById('header').innerHTML = html);
 
-    const userId = 1; // Replace with real user ID if needed
+    const userId = 1;
 
     async function submitEmergencyInfo() {
       const data = {
@@ -165,13 +166,75 @@
       `;
     }
 
-    // Function to handle panic button click
-    function triggerPanicAlert() {
-      alert("Panic Alert Triggered! Help is on the way.");
-      // Additional functionality to handle panic alert can be added here (e.g., API call)
+    async function triggerPanicAlert() {
+      const name = "John Doe";
+      const location = "LOCATION";
+
+      const response = await fetch('/api/panicButton', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ userId, name, location })
+      });
+
+      const result = await response.json();
+      alert(result.message || "Panic alert sent!");
+      loadEmergencyStatus();
     }
 
-    window.onload = loadEmergencyInfo;
+   async function loadEmergencyStatus() {
+  const res = await fetch(`/api/panicButton/${userId}`);
+  const emergencies = await res.json();
+
+  const container = document.getElementById("emergencyDisplay");
+  container.innerHTML = ""; // Clear old
+
+  if (emergencies.length === 0) {
+    container.innerHTML = `<p><em>No active emergencies.</em></p>`;
+    return;
+  }
+
+  const latest = emergencies[emergencies.length - 1];
+  window.latestEmergencyId = latest.EmergencyId;
+
+  // Only show if status is Ongoing
+  if (latest.Status !== "Ongoing") {
+    container.innerHTML = `<p><em>No active emergencies.</em></p>`;
+    return;
+  }
+
+  container.innerHTML = `
+    <div style="background-color: #e6f7ff; padding: 15px; border-radius: 10px; text-align: left;">
+      <strong>Location:</strong> ${latest.Location}<br>
+      <strong>Status:</strong> <span id="currentStatus">${latest.Status}</span>
+
+      <div style="margin-top: 10px; display: flex; gap: 10px;">
+        <button onclick="updateEmergencyStatus('Resolved')" style="background-color: green; color: white; border: none; padding: 8px 12px; border-radius: 5px;">✔ Resolve</button>
+        <button onclick="updateEmergencyStatus('Cancelled')" style="background-color: crimson; color: white; border: none; padding: 8px 12px; border-radius: 5px;">✘ Cancel</button>
+      </div>
+    </div>
+  `;
+}
+
+
+    async function updateEmergencyStatus(newStatus) {
+  if (!window.latestEmergencyId) return alert("No active emergency found.");
+
+  const response = await fetch(`/api/panicButton/${window.latestEmergencyId}`, {
+    method: "PUT",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ userId, status: newStatus })
+  });
+
+  const result = await response.json();
+  alert(result.message || "Status updated");
+  loadEmergencyStatus();
+}
+
+
+    window.onload = () => {
+      loadEmergencyInfo();
+      loadEmergencyStatus();
+    };
   </script>
 </body>
 </html>

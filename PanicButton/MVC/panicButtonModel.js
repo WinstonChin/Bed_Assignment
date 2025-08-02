@@ -5,7 +5,10 @@ async function GetAllEmergencies(userId) {
   let connection;
   try {
     connection = await sql.connect(dbConfig);
-    const query = "SELECT * FROM Emergencies WHERE userId = @userId";
+    const query = `
+  SELECT * FROM Emergencies
+  WHERE userId = @userId AND Status = 'Ongoing'
+`;
     const request = connection.request();
     request.input("userId", sql.Int, userId);
     const result = await request.query(query);
@@ -39,12 +42,18 @@ async function getEmergencyById(id, userId) {
 async function CreateEmergency({ userId, name, location }) {
   let connection;
   try {
+    console.log("🔥 Creating emergency:", userId, name, location); // Debug
     connection = await sql.connect(dbConfig);
-    const query = "INSERT INTO Emergencies (userId, Name, Location, Status) VALUES (@userId, @name, @location, 'Ongoing')";
+
+    const query = `
+      INSERT INTO Emergencies (userId, Name, Location, Status, CreatedAt, UpdatedAt)
+      VALUES (@userId, @name, @location, 'Ongoing', GETDATE(), GETDATE())
+    `;
     const request = connection.request();
     request.input("userId", sql.Int, userId);
     request.input("name", sql.NVarChar, name);
     request.input("location", sql.NVarChar, location);
+
     await request.query(query);
   } catch (error) {
     console.error("CreateEmergency error:", error);
@@ -54,11 +63,17 @@ async function CreateEmergency({ userId, name, location }) {
   }
 }
 
+
+
 async function updateEmergency(id, { userId, status }) {
   let connection;
   try {
     connection = await sql.connect(dbConfig);
-    const query = "UPDATE Emergencies SET Status = @status WHERE EmergencyId = @id AND userId = @userId";
+    const query = `
+      UPDATE Emergencies
+      SET Status = @status
+      WHERE EmergencyId = @id AND userId = @userId
+    `;
     const request = connection.request();
     request.input("id", sql.Int, id);
     request.input("userId", sql.Int, userId);
@@ -72,6 +87,7 @@ async function updateEmergency(id, { userId, status }) {
     if (connection) await connection.close().catch(console.error);
   }
 }
+
 
 async function deleteEmergency(id, userId) {
   let connection;

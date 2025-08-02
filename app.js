@@ -28,8 +28,6 @@ const { validateAppointment, validateAppointmentID } = require('./Appointment/MV
 const { validateEmergencyInfo } = require('./Contacts/MVC/emergencyValidation');
 const { validateActivity} = require('./Daily-Planner/MVC/dailyPlannerValidation');
 
-
-
 const app = express();
 const port = process.env.PORT || 3000;
 
@@ -69,6 +67,8 @@ app.delete("/api/appointments/:id", authenticate, validateAppointmentID, appoint
 //Mood Tracker//
 app.get('/api/moods/:userId', moodController.getMoodLogs);
 app.post('/api/moods', moodController.logMood);
+app.delete('/api/moods/:id', moodController.deleteMoodLog);
+app.put('/api/moods/:id', moodController.updateMoodLog);
 
 //Emergency Info Card//
 app.get('/api/emergency-info/:userId', emergencyController.getEmergencyInfo);
@@ -88,11 +88,12 @@ app.put("/api/dailyPlanner/:id", dailyPlannerController.updateActivity);
 app.delete("/api/dailyPlanner/:id", dailyPlannerController.deleteActivity);
 
 // Panic Button Routes
-app.get("/api/panicButton/:userId", authenticate, panicButtonController.getAllEmergencies);
-app.get("/api/panicButton/:userId/:id", authenticate, panicButtonController.getEmergencyById);
-app.post("/api/panicButton", authenticate, panicButtonController.createEmergency);
-app.put("/api/panicButton/:id", authenticate, panicButtonController.updateEmergency);
-app.delete("/api/panicButton/:id", authenticate, panicButtonController.deleteEmergency);
+app.get("/api/panicButton/:userId",  panicButtonController.getAllEmergencies);
+app.get("/api/panicButton/:userId/:id", panicButtonController.getEmergencyById);
+app.post("/api/panicButton", panicButtonController.createEmergency);
+
+app.put("/api/panicButton/:id",  panicButtonController.updateEmergency);
+app.delete("/api/panicButton/:id", panicButtonController.deleteEmergency);
 
 //Profile//
 const loginController = require('./Login/MVC/loginController');
