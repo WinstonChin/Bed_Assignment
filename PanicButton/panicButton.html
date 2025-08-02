@@ -7,7 +7,24 @@
 </head>
 <body>
   <h1>Panic Button</h1>
-  <button id="panic-button" style="font-size: 30px; background-color: red; color: white;">Press in Emergency</button>
+  <button id="panic-button" style="font-size: 30px; background-color: red; color: white;">
+    Press in Emergency
+  </button>
+
+  <h2>Active Emergencies</h2>
+  <table border="1" id="emergency-table" style="width: 100%; margin-top: 20px;">
+    <thead>
+      <tr>
+        <th>User ID</th>
+        <th>Name</th>
+        <th>Location</th>
+        <th>Status</th>
+        <th>Created At</th>
+        <th>Last Updated</th>
+      </tr>
+    </thead>
+    <tbody></tbody>
+  </table>
 
   <script src="panicButton.js"></script>
 </body>

@@ -222,3 +222,8 @@ function formatDateTime(rawDateTime) {
   const match = rawDateTime.match(/T(\d{2}:\d{2})/);
   return match ? match[1] : rawDateTime;
 }
+// Load activities on page load
+window.onload = () => {
+  loadActivities();
+};
+

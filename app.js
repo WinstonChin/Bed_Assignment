@@ -88,11 +88,12 @@ app.put("/api/dailyPlanner/:id", dailyPlannerController.updateActivity);
 app.delete("/api/dailyPlanner/:id", dailyPlannerController.deleteActivity);
 
 // Panic Button Routes
-app.get("/api/panicButton/:userId", authenticate, panicButtonController.getAllEmergencies);
-app.get("/api/panicButton/:userId/:id", authenticate, panicButtonController.getEmergencyById);
-app.post("/api/panicButton", authenticate, panicButtonController.createEmergency);
-app.put("/api/panicButton/:id", authenticate, panicButtonController.updateEmergency);
-app.delete("/api/panicButton/:id", authenticate, panicButtonController.deleteEmergency);
+app.get("/api/panicButton/:userId",  panicButtonController.getAllEmergencies);
+app.get("/api/panicButton/:userId/:id", panicButtonController.getEmergencyById);
+app.post("/api/panicButton", panicButtonController.createEmergency);
+
+app.put("/api/panicButton/:id",  panicButtonController.updateEmergency);
+app.delete("/api/panicButton/:id", panicButtonController.deleteEmergency);
 
 //Profile//
 const loginController = require('./Login/MVC/loginController');
