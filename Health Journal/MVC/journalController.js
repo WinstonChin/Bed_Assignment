@@ -1,4 +1,28 @@
-const symptomData={
+const fs = require('fs');
+const path = require('path'); // <-- Move this up!
+const uploadsDir = path.join(__dirname, '../../uploads');
+if (!fs.existsSync(uploadsDir)) {
+  fs.mkdirSync(uploadsDir, { recursive: true });
+}
+const journalModel = require('./journalModel');
+const journalSchema = require('./journalValidation');
+const multer = require('multer');
+
+// Configure multer for file uploads
+const storage = multer.diskStorage({
+  destination: function (req, file, cb) {
+    cb(null, path.join(__dirname, '../../uploads'));
+  },
+  filename: function (req, file, cb) {
+    // Use timestamp + original name for uniqueness
+    const uniqueSuffix = Date.now() + '-' + Math.round(Math.random() * 1E9);
+    const ext = path.extname(file.originalname);
+    cb(null, file.fieldname + '-' + uniqueSuffix + ext);
+  }
+});
+const upload = multer({ storage: storage });
+
+const symptomData = {
   "fever,cough,sore throat": {
     "conditions": ["Flu", "COVID-19", "Common Cold"],
     "recommendation": "It may be a viral infection. Monitor your temperature and stay hydrated. If symptoms persist for more than 3 days or worsen, consult a general practitioner."
@@ -59,7 +83,7 @@ const symptomData={
     "conditions": ["Depression", "Anxiety Disorder"],
     "recommendation": "These signs point to a mental health issue. Reach out to a trusted friend or caregiver. Speak with a GP or counselor — support is available and effective treatments exist."
   }
-}
+};
 
 function analyzeSymptoms(inputSymptoms) {
   const inputArr = inputSymptoms
@@ -76,29 +100,44 @@ function analyzeSymptoms(inputSymptoms) {
     }
   }
 
-  // Try partial match (at least 2 symptoms overlap)
+  // Try partial match (at least 1 symptom overlap)
   for (const key in symptomData) {
     const keyArr = key.toLowerCase().split(',').map(s => s.trim());
     const overlap = keyArr.filter(sym => inputArr.includes(sym));
-    if (overlap.length >= 1) { // adjust threshold as needed
+    if (overlap.length >= 1) {
       return symptomData[key];
     }
   }
 
   return null;
 }
-const journalModel = require('./journalModel');
-const journalSchema = require('./journalValidation');
-
-// GET ALL ENTRIES FOR LOGGED-IN USER
-async function GetAllEntries(req, res) {
-const userId = 1; // Hardcoded default user
-
-
-
+async function SearchEntries(req, res) {
   try {
-    const entries = await journalModel.GetAllEntriesByUser(userId);
-    res.json(entries);
+    const { date, pain_level, symptoms } = req.query;
+    const userId = 1; // or req.user.id
+
+    const results = await journalModel.SearchEntries({ userId, date, pain_level, symptoms });
+    // Always return an array, even if empty
+    const entriesWithPhoto = results.map(entry => ({
+      ...entry,
+      photo_url: entry.photo ? `/uploads/${entry.photo}` : null
+    }));
+    res.json(entriesWithPhoto);
+  } catch (err) {
+    console.error('SearchEntries error:', err);
+    res.status(500).json({ error: 'Failed to search entries' });
+  }
+}
+// GET ALL ENTRIES
+async function GetAllEntries(req, res) {
+  try {
+    const entries = await journalModel.getAllEntries();
+    // Add photo_url for each entry if photo exists
+    const entriesWithPhoto = entries.map(entry => ({
+      ...entry,
+      photo_url: entry.photo ? `/uploads/${entry.photo}` : null
+    }));
+    res.json(entriesWithPhoto);
   } catch (error) {
     console.error('GetAllEntries error:', error);
     res.status(500).json({ error: 'Failed to retrieve health journal entries' });
@@ -117,6 +156,9 @@ async function GetEntryById(req, res) {
       return res.status(404).json({ error: 'Entry not found' });
     }
 
+    // Add photo_url if photo exists
+    entry.photo_url = entry.photo ? `/uploads/${entry.photo}` : null;
+
     res.json(entry);
   } catch (err) {
     console.error('GetEntryById error:', err);
@@ -124,29 +166,50 @@ async function GetEntryById(req, res) {
   }
 }
 
-
-// CREATE ENTRY
+// CREATE ENTRY (with photo upload)
 async function CreateEntry(req, res) {
   const userId = 1; // Hardcoded default user
 
-  const { error, value } = journalSchema.validate(req.body);
-  if (error) return res.status(400).json({ error: error.details[0].message });
+  // If using multer, req.body fields are strings, req.file is the uploaded file
+  let entryData;
+  if (req.file) {
+    // If photo uploaded, use req.body and req.file
+    entryData = {
+      ...req.body,
+      photo: req.file.filename,
+      user_id: userId
+    };
+  } else {
+    entryData = {
+      ...req.body,
+      user_id: userId
+    };
+  }
+
+  // Validate (convert pain_level to number)
+  entryData.pain_level = parseInt(entryData.pain_level);
+
+const { error, value } = journalSchema.validate(entryData);
+if (error) {
+  console.error('Validation error:', error.details[0].message); // Add this for debugging
+  return res.status(400).json({ error: error.details[0].message });
+}
 
   // Analyze symptoms
   const match = analyzeSymptoms(value.symptoms);
 
-  const entryData = {
+  const finalEntryData = {
     ...value,
-    user_id: userId,
+    photo: entryData.photo || null,
     conditions: match?.conditions || [],
     recommendation: match?.recommendation || ''
   };
 
   try {
-    await journalModel.CreateEntry(entryData);
+    await journalModel.CreateEntry(finalEntryData);
     res.status(201).json({
       message: 'Health journal entry created',
-      data: entryData,
+      data: finalEntryData,
       analysis: match || { conditions: [], recommendation: "No matching symptoms found." }
     });
   } catch (err) {
@@ -155,17 +218,31 @@ async function CreateEntry(req, res) {
   }
 }
 
-// UPDATE ENTRY
+// UPDATE ENTRY (with photo upload)
 async function UpdateEntry(req, res) {
   const userId = 1; // Hardcoded default user
 
+  let entryData;
+  if (req.file) {
+    entryData = {
+      ...req.body,
+      photo: req.file.filename,
+      user_id: userId
+    };
+  } else {
+    entryData = {
+      ...req.body,
+      user_id: userId
+    };
+  }
+  entryData.pain_level = parseInt(entryData.pain_level);
 
-  const { error, value } = journalSchema.validate(req.body);
+  const { error, value } = journalSchema.validate(entryData);
   if (error) return res.status(400).json({ error: error.details[0].message });
 
   try {
     const id = parseInt(req.params.id);
-    const updated = await journalModel.UpdateEntry(id, userId, value);
+    const updated = await journalModel.UpdateEntry(id, userId, value, entryData.photo);
     if (!updated) return res.status(404).json({ error: 'Entry not found or not authorized' });
 
     res.json({ message: 'Entry updated', entry: updated });
@@ -177,11 +254,10 @@ async function UpdateEntry(req, res) {
 
 // DELETE ENTRY
 async function DeleteEntry(req, res) {
-const userId = 1; // Hardcoded default user
-
+  const userId = 1; // Hardcoded default user
 
   try {
-    const id= parseInt(req.params.id);
+    const id = parseInt(req.params.id);
     const deleted = await journalModel.DeleteEntry(id, userId);
     if (!deleted) return res.status(404).json({ error: 'Entry not found or not authorized' });
 
@@ -192,11 +268,13 @@ const userId = 1; // Hardcoded default user
   }
 }
 
+// Export multer upload for use in routes
 module.exports = {
+  SearchEntries,
   GetAllEntries,
   GetEntryById,
   CreateEntry,
   UpdateEntry,
   DeleteEntry,
-  
+  upload // <-- export multer upload middleware
 };
