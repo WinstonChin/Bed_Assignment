@@ -27,6 +27,8 @@ const { authenticate } = require("./Login/authenticate");
 const { validateAppointment, validateAppointmentID } = require('./Appointment/MVC/appointmentValidation');
 const { validateEmergencyInfo } = require('./Contacts/MVC/emergencyValidation');
 const { validateActivity} = require('./Daily-Planner/MVC/dailyPlannerValidation');
+const { validateMoodLog } = require('./DailyPlanner/MVC/dailyValidation');
+
 
 const app = express();
 const port = process.env.PORT || 3000;
@@ -69,6 +71,7 @@ app.get('/api/moods/:userId', moodController.getMoodLogs);
 app.post('/api/moods', moodController.logMood);
 app.delete('/api/moods/:id', moodController.deleteMoodLog);
 app.put('/api/moods/:id', moodController.updateMoodLog);
+app.post('/api/moods', validateMoodLog, moodController.logMood);
 
 //Emergency Info Card//
 app.get('/api/emergency-info/:userId', emergencyController.getEmergencyInfo);
