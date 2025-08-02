@@ -4,7 +4,8 @@ const sql = require('mssql');
 const cors = require('cors');
 require('dotenv').config();
 const axios = require('axios');
-
+const swaggerUi = require('swagger-ui-express');
+const swaggerDocument = require('./swagger-output.json');
 // Database Configuration
 const dbConfig = require("./dbConfig");
 
@@ -35,6 +36,7 @@ const { validateMoodLog } = require('./DailyPlanner/MVC/dailyValidation');
 
 const app = express();
 app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerSpec));
+app.use("api-docs", swaggerUi.serve, swaggerUi.setup(swaggerDocument));
 const port = process.env.PORT || 3000;
 
 // Middleware
@@ -56,7 +58,42 @@ app.post('/signup', validateSignup, signupUser);
 
 
 //Medicine//
+
+/**
+ * @swagger
+ * /api/meds:
+ *   get:
+ *     summary: Get all medicine reminders for a user
+ *     tags: [Medicine]
+ *     responses:
+ *       200:
+ *         description: Success
+ *       500:
+ *         description: Failed to fetch meds
+ */
 app.get("/api/meds", authenticate, medsController.getAllDates);
+
+/**
+ * @swagger
+ * /api/meds/{id}:
+ *   get:
+ *     summary: Get a medicine reminder by ID
+ *     tags: [Medicine]
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         schema:
+ *           type: integer
+ *         required: true
+ *         description: Reminder ID
+ *     responses:
+ *       200:
+ *         description: Success
+ *       404:
+ *         description: Reminder not found or unauthorized
+ *       500:
+ *         description: Failed to fetch reminder
+ */
 app.get("/api/meds/:id", authenticate, validateDateID, medsController.getDateById);
 app.post("/api/meds", authenticate, validateDate, medsController.createDate);
 app.put("/api/meds/:id", authenticate, validateDateID, validateDate, medsController.updateDate);
