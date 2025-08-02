@@ -50,6 +50,7 @@
     input[type="date"],
     input[type="number"],
     input[type="text"],
+    input[type="file"],
     textarea {
       width: 100%;
       padding: 12px;
@@ -156,14 +157,12 @@
   <main>
     <h1>📝 My Health Journal</h1>
     <!-- Message Display -->
-<div id="message-box" style="display:none; padding:10px; margin-bottom:1em; border-radius:5px;"></div>
+    <div id="message-box" style="display:none; padding:10px; margin-bottom:1em; border-radius:5px;"></div>
 
-
-    <form id="journal-form">
+    <form id="journal-form" enctype="multipart/form-data">
       <input type="hidden" id="entry-id" />
       <label for="entry-date">Date:</label>
       <input type="datetime-local" id="entry-date" />
-
 
       <label for="pain-level">Pain Level (0–10):</label>
       <input type="number" id="pain-level" min="0" max="10" required />
@@ -177,15 +176,29 @@
       <label for="notes">Notes:</label>
       <textarea id="notes" maxlength="500" required></textarea>
 
+      <label for="photo">Attach Photo (optional):</label>
+      <input type="file" id="photo" name="photo" accept="image/*" />
+
       <button type="submit">Save Entry</button>
     </form>
     <div id="symptom-analysis" style="display:none; margin: 20px 0; padding: 16px; border-radius: 10px; background: #f3f0ff; color: #4a2a7d; font-weight: 500;"></div>
 
     <hr />
+    <h2>Pain Level Trend</h2>
+    <canvas id="painTrendChart" width="600" height="400" style="margin: 0 auto 30px auto; display: block;"></canvas>
 
     <h2>Journal Entries</h2>
+    <form id="search-form" style="margin-bottom:20px;">
+  <label>Date: <input type="date" id="search-date"></label>
+  <label>Pain Level: <input type="number" min="0" max="10" id="search-pain"></label>
+  <label>Symptoms: <input type="text" id="search-symptoms"></label>
+  <button type="submit">Search</button>
+  <button type="button" id="clear-search">Clear</button>
+</form>
     <ul id="journal-list"></ul>
   </main>
+
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 
   <script>
     fetch('header.html')

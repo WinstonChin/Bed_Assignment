@@ -206,6 +206,8 @@ app.use(express.static(path.join(__dirname, 'DailyPlanner')));
 app.use(express.static(path.join(__dirname, 'Contacts')));
 app.use(express.static(path.join(__dirname, 'Profile')));
 app.use(express.static(path.join(__dirname, 'DrugAnalyser')));
+app.use(express.static(path.join(__dirname, 'Nutrition Lookup')));
+app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
 
 
 
@@ -215,11 +217,18 @@ app.post('/signup', signupUser);
 
 
 // Health Journal Routes
+app.get('/health-journal/entries', journalController.GetAllEntries);
+app.get('/health-journal/search', journalController.SearchEntries); // <-- MOVE THIS UP
 app.get('/health-journal', journalController.GetAllEntries);
 app.get('/health-journal/:id', journalController.GetEntryById);
-app.post('/health-journal', journalController.CreateEntry);
-app.put('/health-journal/:id', journalController.UpdateEntry);
+app.post('/health-journal', journalController.upload.single('photo'), journalController.CreateEntry);
+app.put('/health-journal/:id', journalController.upload.single('photo'), journalController.UpdateEntry);
 app.delete('/health-journal/:id', journalController.DeleteEntry);
+
+//Nutrition Lookup Routes
+app.get('/nutrition-lookup', (req, res) => {
+  res.sendFile(path.join(__dirname, 'Nutrition Lookup', 'nutrition.html'));
+});
 
 // Test route
 app.get("/api/test", (req, res) => {
