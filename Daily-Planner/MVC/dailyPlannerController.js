@@ -1,34 +1,11 @@
-const { CreateActivity, GetAllActivities,updateActivityStatus, deleteActivity } = require("./dailyPlannerModel");
-
-
-async function getActivityById(req, res) {
-  try {
-    const userId = req.user.userId;
-    const id = parseInt(req.params.id, 10);
-    const activity = await dailyPlannerModel.getActivityById(id, userId);
-    if (!activity) return res.status(404).json({ error: "Activity not found or unauthorized" });
-    res.status(200).json(activity);
-  } catch (error) {
-    res.status(500).json({ error: "Failed to fetch activity" });
-  }
-}
-
-
-
-async function createActivity(req, res) {
-  try {
-    const { userId, startTime, endTime, activity, status } = req.body;
-
-    // This line must call the CreateActivity function from the model
-    await CreateActivity({ userId, startTime, endTime, activity, status });
-
-    res.status(201).json({ message: "Activity added" });
-  } catch (error) {
-    console.error("createActivity error:", error);
-    res.status(500).json({ error: "Failed to create activity" });
-  }
-}
-
+const {
+  CreateActivity,
+  GetAllActivities,
+  getActivityById,
+  updateActivity,
+  updateActivityStatus,
+  deleteActivity
+} = require("./dailyPlannerModel");
 
 async function getAllActivities(req, res) {
   try {
@@ -36,7 +13,7 @@ async function getAllActivities(req, res) {
     if (isNaN(userId)) return res.status(400).json({ error: "Invalid userId" });
 
     const activities = await GetAllActivities(userId);
-    console.log("Activities returned:", activities); 
+    console.log("Activities returned:", activities);
     res.status(200).json(activities);
   } catch (error) {
     console.error("getAllActivities error:", error);
@@ -44,11 +21,46 @@ async function getAllActivities(req, res) {
   }
 }
 
+async function getActivityByIdHandler(req, res) {
+  try {
+    const userId = req.user.userId;
+    const id = parseInt(req.params.id, 10);
+    const activity = await getActivityById(id, userId);
+    if (!activity) return res.status(404).json({ error: "Activity not found or unauthorized" });
+    res.status(200).json(activity);
+  } catch (error) {
+    res.status(500).json({ error: "Failed to fetch activity" });
+  }
+}
 
+async function createActivity(req, res) {
+  try {
+    const { userId, startTime, endTime, activity, status } = req.body;
+    await CreateActivity({ userId, startTime, endTime, activity, status });
+    res.status(201).json({ message: "Activity added" });
+  } catch (error) {
+    console.error("createActivity error:", error);
+    res.status(500).json({ error: "Failed to create activity" });
+  }
+}
 
+async function updateActivityDetails(req, res) {
+  try {
+    const id = parseInt(req.params.id, 10);
+    const { userId } = req.user;
+    const { startTime, endTime, activity } = req.body;
 
+    const success = await updateActivity(id, { userId, startTime, endTime, activity });
+    if (!success) return res.status(404).json({ error: "Activity not found or unauthorized" });
 
-async function updateActivity(req, res) {
+    res.status(200).json({ message: "Activity updated" });
+  } catch (error) {
+    console.error("updateActivity error:", error);
+    res.status(500).json({ error: "Update failed" });
+  }
+}
+
+async function updateActivityStatusHandler(req, res) {
   try {
     const id = parseInt(req.params.id, 10);
     const { status } = req.body;
@@ -62,7 +74,7 @@ async function updateActivity(req, res) {
 
     res.status(200).json({ message: "Status updated" });
   } catch (error) {
-    console.error("updateActivity error:", error);
+    console.error("updateActivityStatus error:", error);
     res.status(500).json({ error: "Update failed" });
   }
 }
@@ -84,8 +96,8 @@ async function deleteActivityHandler(req, res) {
 
 module.exports = {
   getAllActivities,
-  getActivityById,
+  getActivityById: getActivityByIdHandler,
   createActivity,
-  updateActivity,
+  updateActivity: updateActivityDetails,
   deleteActivity: deleteActivityHandler
 };
