@@ -114,7 +114,7 @@ function analyzeSymptoms(inputSymptoms) {
 async function SearchEntries(req, res) {
   try {
     const { date, pain_level, symptoms } = req.query;
-    const userId = 1; // or req.user.id
+    const userId = req.user.id; 
 
     const results = await journalModel.SearchEntries({ userId, date, pain_level, symptoms });
     // Always return an array, even if empty
@@ -147,7 +147,7 @@ async function GetAllEntries(req, res) {
 // GET SINGLE ENTRY BY ID
 async function GetEntryById(req, res) {
   try {
-    const userId = 1; // or req.user.id if using auth
+    const userId = req.user.id; // instead of hardcoded 1
     const id = parseInt(req.params.id);
 
     const entry = await journalModel.GetEntryById(id, userId);
@@ -168,7 +168,7 @@ async function GetEntryById(req, res) {
 
 // CREATE ENTRY (with photo upload)
 async function CreateEntry(req, res) {
-  const userId = 1; // Hardcoded default user
+  const userId = req.user.id; // instead of hardcoded 1
 
   // If using multer, req.body fields are strings, req.file is the uploaded file
   let entryData;
@@ -220,7 +220,7 @@ if (error) {
 
 // UPDATE ENTRY (with photo upload)
 async function UpdateEntry(req, res) {
-  const userId = 1; // Hardcoded default user
+  const userId = req.user.id; // instead of hardcoded 1
 
   let entryData;
   if (req.file) {
@@ -254,7 +254,7 @@ async function UpdateEntry(req, res) {
 
 // DELETE ENTRY
 async function DeleteEntry(req, res) {
-  const userId = 1; // Hardcoded default user
+    const userId = req.user.id; // instead of hardcoded 1
 
   try {
     const id = parseInt(req.params.id);

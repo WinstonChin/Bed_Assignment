@@ -441,7 +441,6 @@ app.get("/api/weather", weatherController.getWeatherChecks);
 app.put("/api/weather/:id", weatherController.updateWeatherEntry);
 app.delete("/api/weather/:id", weatherController.deleteWeatherEntry);
 
-//Drug Analyser
 /**
  * @swagger
  * /drug-analyser:
@@ -459,6 +458,7 @@ app.delete("/api/weather/:id", weatherController.deleteWeatherEntry);
  *                 type: array
  *                 items:
  *                   type: string
+ *                 example: ["paracetamol"]
  *     responses:
  *       200:
  *         description: Drug analysis result
@@ -475,6 +475,10 @@ app.delete("/api/weather/:id", weatherController.deleteWeatherEntry);
  *                   type: string
  *                 precautions:
  *                   type: string
+ *       400:
+ *         description: No medications provided
+ *       500:
+ *         description: Failed to retrieve drug data
  */
 app.post('/drug-analyser', drugController.analyzeDrugs);
 
@@ -595,7 +599,7 @@ app.post('/signup', signupUser);
  *               items:
  *                 $ref: '#/components/schemas/HealthJournalEntry'
  */
-app.get('/health-journal/entries', journalController.GetAllEntries);
+app.get('/health-journal/entries', authenticate, journalController.GetAllEntries);
 /**
  * @swagger
  * /health-journal/search:
@@ -632,7 +636,7 @@ app.get('/health-journal/entries', journalController.GetAllEntries);
  *               items:
  *                 $ref: '#/components/schemas/HealthJournalEntry'
  */
-app.get('/health-journal/search', journalController.SearchEntries); 
+app.get('/health-journal/search', authenticate, journalController.SearchEntries); 
 /**
  * @swagger
  * /health-journal/entries:
@@ -649,7 +653,7 @@ app.get('/health-journal/search', journalController.SearchEntries);
  *               items:
  *                 $ref: '#/components/schemas/HealthJournalEntry'
  */ 
-app.get('/health-journal', journalController.GetAllEntries);
+app.get('/health-journal', authenticate, journalController.GetAllEntries);
 /**
  * @swagger
  * /health-journal/{id}:
@@ -673,7 +677,7 @@ app.get('/health-journal', journalController.GetAllEntries);
  *       404:
  *         description: Entry not found
  */
-app.get('/health-journal/:id', journalController.GetEntryById);
+app.get('/health-journal/:id', authenticate, journalController.GetEntryById);
 /**
  * @swagger
  * /health-journal:
@@ -701,7 +705,7 @@ app.get('/health-journal/:id', journalController.GetEntryById);
  *       201:
  *         description: Health journal entry created successfully
  */
-app.post('/health-journal', journalController.upload.single('photo'), journalController.CreateEntry);
+app.post('/health-journal', authenticate, journalController.upload.single('photo'), journalController.CreateEntry);
 /**
  * @swagger
  * /health-journal/{id}:
@@ -736,7 +740,7 @@ app.post('/health-journal', journalController.upload.single('photo'), journalCon
  *       200:
  *         description: Health journal entry updated successfully
  */
-app.put('/health-journal/:id', journalController.upload.single('photo'), journalController.UpdateEntry);
+app.put('/health-journal/:id', authenticate, journalController.upload.single('photo'), journalController.UpdateEntry);
 /**
  * @swagger
  * /health-journal/{id}:
@@ -754,7 +758,7 @@ app.put('/health-journal/:id', journalController.upload.single('photo'), journal
  *       204:
  *         description: Health journal entry deleted successfully
  */
-app.delete('/health-journal/:id', journalController.DeleteEntry);
+app.delete('/health-journal/:id', authenticate, journalController.DeleteEntry);
 
 //Nutrition Lookup Routes
 
@@ -764,6 +768,7 @@ app.delete('/health-journal/:id', journalController.DeleteEntry);
  *   get:
  *     summary: Serve the Nutrition Lookup HTML page
  *     tags: [Nutrition Lookup]
+ * 
  *     responses:
  *       200:
  *         description: Nutrition Lookup HTML page
