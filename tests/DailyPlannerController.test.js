@@ -22,8 +22,8 @@ describe('Daily Planner Controller', () => {
 
   test('getAllActivities - success', async () => {
     const req = {
-      user: { userId: 1 },
-    };
+  params: { userId: '1' },
+};
     dailyPlannerModel.GetAllActivities.mockResolvedValueOnce([{ id: 1 }]);
     await dailyPlannerController.getAllActivities(req, res);
     expect(res.status).toHaveBeenCalledWith(200);
@@ -41,20 +41,23 @@ describe('Daily Planner Controller', () => {
     expect(res.json).toHaveBeenCalledWith({ error: "Activity not found or unauthorized" });
   });
 
-  test('createActivity - error', async () => {
-    const req = {
-      user: { userId: 1 },
-      body: {
-        startTime: '08:00',
-        endTime: '09:00',
-        activity: 'Walk',
-      }
-    };
-    dailyPlannerModel.CreateActivity.mockRejectedValueOnce(new Error('fail'));
-    await dailyPlannerController.createActivity(req, res);
-    expect(res.status).toHaveBeenCalledWith(500);
-    expect(res.json).toHaveBeenCalledWith({ error: "Failed to create activity" });
-  });
+ test('createActivity - error', async () => {
+  const req = {
+    user: { userId: 1 },
+    body: {
+      userId: 1,
+      startTime: '08:00',
+      endTime: '09:00',
+      activity: 'Walk',
+      status: 'pending'
+    }
+  };
+  dailyPlannerModel.CreateActivity.mockRejectedValueOnce(new Error('fail'));
+  await dailyPlannerController.createActivity(req, res);
+  expect(res.status).toHaveBeenCalledWith(500);
+  expect(res.json).toHaveBeenCalledWith({ error: "Failed to create activity" });
+});
+
 
   test('updateActivity - success', async () => {
     const req = {
