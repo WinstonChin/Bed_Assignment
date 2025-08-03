@@ -1,14 +1,19 @@
 const sql = require('mssql');
 const dbConfig = require('../../dbConfig');
 
-
-// GET ALL ENTRIES
-async function getAllEntries() {
+// GET ALL ENTRIES FOR A USER (recommended for security)
+async function getAllEntries(userId) {
   let connection;
   try {
     connection = await sql.connect(dbConfig);
-    const query = `SELECT * FROM HealthJournal ORDER BY entry_date DESC`;
-    const result = await connection.request().query(query);
+    const query = `
+      SELECT * FROM HealthJournal
+      WHERE user_id = @userId
+      ORDER BY entry_date DESC
+    `;
+    const request = connection.request();
+    request.input('userId', sql.Int, userId);
+    const result = await request.query(query);
     return result.recordset;
   } catch (error) {
     console.error("Database error (getAllEntries):", error);
@@ -24,35 +29,7 @@ async function getAllEntries() {
   }
 }
 
-// GET ALL ENTRIES FOR A USER
-async function GetAllEntriesByUser(userId) {
-  let connection;
-  try {
-    connection = await sql.connect(dbConfig);
-    const query = `
-      SELECT * FROM HealthJournal
-      WHERE user_id = @userId
-      ORDER BY entry_date DESC
-    `;
-    const request = connection.request();
-    request.input('userId', sql.Int, userId);
-    const result = await request.query(query);
-    return result.recordset;
-  } catch (error) {
-    console.error("Database error (GetAllEntriesByUser):", error);
-    throw error;
-  } finally {
-    if (connection) {
-      try {
-        await connection.close();
-      } catch (err) {
-        console.error("Error closing connection:", err);
-      }
-    }
-  }
-}
-
-// GET SINGLE ENTRY BY ID
+// GET SINGLE ENTRY BY ID (for a user)
 async function GetEntryById(id, userId) {
   let connection;
   try {
@@ -179,7 +156,7 @@ async function UpdateEntry(id, userId, data, photoFilename) {
   }
 }
 
-// DELETE JOURNAL ENTRY
+// DELETE JOURNAL ENTRY (for a user)
 async function DeleteEntry(id, userId) {
   let connection;
   try {
@@ -212,6 +189,7 @@ async function DeleteEntry(id, userId) {
   }
 }
 
+// SEARCH ENTRIES (for a user)
 async function SearchEntries({ userId, date, pain_level, symptoms }) {
   let connection;
   try {
@@ -249,7 +227,6 @@ async function SearchEntries({ userId, date, pain_level, symptoms }) {
 
 module.exports = {
   getAllEntries,    
-  GetAllEntriesByUser,
   GetEntryById,
   SearchEntries,
   CreateEntry,

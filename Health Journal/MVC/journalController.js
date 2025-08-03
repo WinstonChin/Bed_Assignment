@@ -114,7 +114,7 @@ function analyzeSymptoms(inputSymptoms) {
 async function SearchEntries(req, res) {
   try {
     const { date, pain_level, symptoms } = req.query;
-    const userId = req.user.id; 
+    const userId = req.user.id;
 
     const results = await journalModel.SearchEntries({ userId, date, pain_level, symptoms });
     // Always return an array, even if empty
@@ -131,7 +131,8 @@ async function SearchEntries(req, res) {
 // GET ALL ENTRIES
 async function GetAllEntries(req, res) {
   try {
-    const entries = await journalModel.getAllEntries();
+    const userId = req.user.id; // or req.user.id if you standardized
+    const entries = await journalModel.getAllEntries(userId);
     // Add photo_url for each entry if photo exists
     const entriesWithPhoto = entries.map(entry => ({
       ...entry,
@@ -147,7 +148,7 @@ async function GetAllEntries(req, res) {
 // GET SINGLE ENTRY BY ID
 async function GetEntryById(req, res) {
   try {
-    const userId = req.user.id; // instead of hardcoded 1
+    const userId = req.user.userId;
     const id = parseInt(req.params.id);
 
     const entry = await journalModel.GetEntryById(id, userId);
@@ -168,7 +169,8 @@ async function GetEntryById(req, res) {
 
 // CREATE ENTRY (with photo upload)
 async function CreateEntry(req, res) {
-  const userId = req.user.id; // instead of hardcoded 1
+  console.log('DEBUG req.user:', req.user);
+  const userId = req.user.id;
 
   // If using multer, req.body fields are strings, req.file is the uploaded file
   let entryData;
@@ -213,14 +215,14 @@ if (error) {
       analysis: match || { conditions: [], recommendation: "No matching symptoms found." }
     });
   } catch (err) {
-    console.error('CreateEntry error:', err);
-    res.status(500).json({ error: 'Failed to create entry' });
-  }
+  console.error('CreateEntry error:', err);
+  res.status(500).json({ error: err.message || 'Failed to create entry' });
+}
 }
 
 // UPDATE ENTRY (with photo upload)
 async function UpdateEntry(req, res) {
-  const userId = req.user.id; // instead of hardcoded 1
+  const userId = req.user.id;
 
   let entryData;
   if (req.file) {
@@ -254,7 +256,7 @@ async function UpdateEntry(req, res) {
 
 // DELETE ENTRY
 async function DeleteEntry(req, res) {
-    const userId = req.user.id; // instead of hardcoded 1
+    const userId = req.user.id;
 
   try {
     const id = parseInt(req.params.id);

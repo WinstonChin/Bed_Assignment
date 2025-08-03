@@ -128,15 +128,17 @@ form.addEventListener('submit', async (e) => {
     const response = await fetch(url, {
       method,
       body: formData,
-      credentials: 'include'
+      headers: {
+        'Authorization': 'Bearer ' + token
+      }
     });
     const result = await response.json();
 
-if (!response.ok) {
-  const errorData = await response.json().catch(() => ({}));
-  console.error('Backend error:', errorData);
-  throw new Error(errorData.error || errorData.message || 'Failed to save entry');
-}
+    if (!response.ok) {
+      const errorData = await response.json().catch(() => ({}));
+      console.error('Backend error:', errorData);
+      throw new Error(errorData.error || errorData.message || 'Failed to save entry');
+    }
 
     // Reset form on success
     form.reset();
@@ -161,6 +163,7 @@ if (!response.ok) {
     alert(err.message || 'Failed to save entry');
   }
 });
+
 const searchForm = document.getElementById('search-form');
 const searchDate = document.getElementById('search-date');
 const searchPain = document.getElementById('search-pain');
@@ -183,10 +186,15 @@ clearSearchBtn.addEventListener('click', async () => {
   searchSymptoms.value = '';
   await loadEntries();
 });
+
 async function loadEntries(url = '/health-journal') {
   journalList.innerHTML = '';
   try {
-    const res = await fetch(url);
+    const res = await fetch(url, {
+      headers: {
+        'Authorization': 'Bearer ' + token
+      }
+    });
     const data = await res.json();
 
     if (!Array.isArray(data)) {
@@ -215,7 +223,11 @@ async function loadEntries(url = '/health-journal') {
 
 // Elderly-friendly chart
 async function renderPainTrendChart() {
-  const res = await fetch('/health-journal/entries');
+  const res = await fetch('/health-journal/entries', {
+    headers: {
+      'Authorization': 'Bearer ' + token
+    }
+  });
   const entries = await res.json();
 
   if (!Array.isArray(entries)) {
@@ -334,7 +346,12 @@ renderPainTrendChart();
 async function deleteEntry(id) {
   if (!confirm('Delete this entry?')) return;
   try {
-    await fetch(`${API_URL}/${id}`, { method: 'DELETE' });
+    await fetch(`${API_URL}/${id}`, {
+      method: 'DELETE',
+      headers: {
+        'Authorization': 'Bearer ' + token
+      }
+    });
     await loadEntries();
     await renderPainTrendChart(); // Chart updates after delete
   } catch (err) {
@@ -345,7 +362,11 @@ async function deleteEntry(id) {
 
 async function editEntry(id) {
   try {
-    const res = await fetch(`${API_URL}/${id}`);
+    const res = await fetch(`${API_URL}/${id}`, {
+      headers: {
+        'Authorization': 'Bearer ' + token
+      }
+    });
     const entry = await res.json();
     console.log('entry.entry_date:', entry.entry_date);
     console.log('toLocalDatetimeInputValue:', toLocalDatetimeInputValue(entry.entry_date));
