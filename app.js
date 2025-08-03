@@ -395,14 +395,145 @@ app.delete("/api/appointments/:id", authenticate, validateAppointmentID, appoint
 
 //Mood Tracker//
 app.get('/api/moods/:userId', moodController.getMoodLogs);
+/**
+ * @swagger
+ * /api/moods/{userId}:
+ *   get:
+ *     summary: Get mood logs for a user
+ *     tags: [Mood Tracker]
+ *     parameters:
+ *       - in: path
+ *         name: userId
+ *         required: true
+ *         schema:
+ *           type: integer
+ *     responses:
+ *       200:
+ *         description: Mood logs retrieved
+ *       500:
+ *         description: Server error
+ */
+
 app.post('/api/moods', moodController.logMood);
+/**
+ * @swagger
+ * /api/moods:
+ *   post:
+ *     summary: Create a mood log
+ *     tags: [Mood Tracker]
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             required:
+ *               - userId
+ *               - mood
+ *               - logDate
+ *             properties:
+ *               userId:
+ *                 type: integer
+ *               mood:
+ *                 type: integer
+ *               logDate:
+ *                 type: string
+ *               note:
+ *                 type: string
+ *     responses:
+ *       201:
+ *         description: Mood log created
+ */
 app.delete('/api/moods/:id', moodController.deleteMoodLog);
+/**
+ * @swagger
+ * /api/moods/{id}:
+ *   delete:
+ *     summary: Delete a mood log
+ *     tags: [Mood Tracker]
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         required: true
+ *         schema:
+ *           type: integer
+ *     responses:
+ *       200:
+ *         description: Mood log deleted
+ */
+
 app.put('/api/moods/:id', moodController.updateMoodLog);
+/**
+ * @swagger
+ * /api/moods/{id}:
+ *   put:
+ *     summary: Update a mood log
+ *     tags: [Mood Tracker]
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         schema:
+ *           type: integer
+ *         required: true
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             properties:
+ *               mood:
+ *                 type: integer
+ *               note:
+ *                 type: string
+ *     responses:
+ *       200:
+ *         description: Mood log updated
+ */
 app.post('/api/moods', validateMoodLog, moodController.logMood);
 
 //Emergency Info Card//
 app.get('/api/emergency-info/:userId', emergencyController.getEmergencyInfo);
+/**
+ * @swagger
+ * /api/emergency-info/{userId}:
+ *   get:
+ *     summary: Get emergency info for a user
+ *     tags: [Emergency Info Card]
+ *     parameters:
+ *       - in: path
+ *         name: userId
+ *         required: true
+ *         schema:
+ *           type: integer
+ *     responses:
+ *       200:
+ *         description: Emergency info retrieved
+ */
 app.post('/api/emergency-info', validateEmergencyInfo, emergencyController.upsertEmergencyInfo);
+/**
+ * @swagger
+ * /api/emergency-info:
+ *   post:
+ *     summary: Create or update emergency info
+ *     tags: [Emergency Info Card]
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             properties:
+ *               userId:
+ *                 type: integer
+ *               emergencyContact:
+ *                 type: string
+ *               medicalCondition:
+ *                 type: string
+ *     responses:
+ *       200:
+ *         description: Emergency info saved
+ */
 
 //davian//
 const dailyPlannerController = require('./Daily-Planner/MVC/dailyPlannerController'); 
@@ -410,20 +541,260 @@ const panicButtonController = require('./PanicButton/MVC/panicButtonController')
 
 // Daily Planner Routes
 app.get("/api/dailyPlanner/:userId", dailyPlannerController.getAllActivities);
-
+/**
+ * @swagger
+ * /api/dailyPlanner/{userId}:
+ *   get:
+ *     summary: Get all activities for a user
+ *     tags: [Daily Planner]
+ *     parameters:
+ *       - in: path
+ *         name: userId
+ *         required: true
+ *         schema:
+ *           type: integer
+ *     responses:
+ *       200:
+ *         description: List of activities
+ *       500:
+ *         description: Server error
+ */
 app.get("/api/dailyPlanner/:userId/:id", dailyPlannerController.getActivityById);
-app.post("/api/dailyPlanner", validateActivity, dailyPlannerController.createActivity);
+/**
+ * @swagger
+ * /api/dailyPlanner/{userId}/{id}:
+ *   get:
+ *     summary: Get a specific activity by ID for a user
+ *     tags: [Daily Planner]
+ *     parameters:
+ *       - in: path
+ *         name: userId
+ *         required: true
+ *         schema:
+ *           type: integer
+ *       - in: path
+ *         name: id
+ *         required: true
+ *         schema:
+ *           type: integer
+ *     responses:
+ *       200:
+ *         description: Activity details
+ *       404:
+ *         description: Not found
+ */
 
+app.post("/api/dailyPlanner", validateActivity, dailyPlannerController.createActivity);
+/**
+ * @swagger
+ * /api/dailyPlanner:
+ *   post:
+ *     summary: Create a new activity
+ *     tags: [Daily Planner]
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             required:
+ *               - userId
+ *               - startTime
+ *               - endTime
+ *               - activity
+ *             properties:
+ *               userId:
+ *                 type: integer
+ *               startTime:
+ *                 type: string
+ *               endTime:
+ *                 type: string
+ *               activity:
+ *                 type: string
+ *     responses:
+ *       201:
+ *         description: Activity added
+ *       500:
+ *         description: Error creating activity
+ */
 app.put("/api/dailyPlanner/:id", dailyPlannerController.updateActivity);
+/**
+ * @swagger
+ * /api/dailyPlanner/{id}:
+ *   put:
+ *     summary: Update an existing activity
+ *     tags: [Daily Planner]
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         schema:
+ *           type: integer
+ *         required: true
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             properties:
+ *               userId:
+ *                 type: integer
+ *               startTime:
+ *                 type: string
+ *               endTime:
+ *                 type: string
+ *               activity:
+ *                 type: string
+ *     responses:
+ *       200:
+ *         description: Activity updated
+ *       404:
+ *         description: Activity not found
+ */
 app.delete("/api/dailyPlanner/:id", dailyPlannerController.deleteActivity);
+/**
+ * @swagger
+ * /api/dailyPlanner/{id}:
+ *   delete:
+ *     summary: Delete an activity
+ *     tags: [Daily Planner]
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         required: true
+ *         schema:
+ *           type: integer
+ *     responses:
+ *       200:
+ *         description: Activity deleted
+ *       404:
+ *         description: Activity not found
+ */
 
 // Panic Button Routes
 app.get("/api/panicButton/:userId",  panicButtonController.getAllEmergencies);
+/**
+ * @swagger
+ * /api/panicButton/{userId}:
+ *   get:
+ *     summary: Get all emergency alerts for a user
+ *     tags: [Panic Button]
+ *     parameters:
+ *       - in: path
+ *         name: userId
+ *         required: true
+ *         schema:
+ *           type: integer
+ *     responses:
+ *       200:
+ *         description: List of emergency alerts
+ *       500:
+ *         description: Server error
+ */
 app.get("/api/panicButton/:userId/:id", panicButtonController.getEmergencyById);
+/**
+ * @swagger
+ * /api/panicButton/{userId}/{id}:
+ *   get:
+ *     summary: Get specific emergency alert by ID
+ *     tags: [Panic Button]
+ *     parameters:
+ *       - in: path
+ *         name: userId
+ *         required: true
+ *         schema:
+ *           type: integer
+ *       - in: path
+ *         name: id
+ *         required: true
+ *         schema:
+ *           type: integer
+ *     responses:
+ *       200:
+ *         description: Emergency info
+ *       404:
+ *         description: Not found
+ */
 app.post("/api/panicButton", panicButtonController.createEmergency);
-
+/**
+ * @swagger
+ * /api/panicButton:
+ *   post:
+ *     summary: Trigger a new emergency alert
+ *     tags: [Panic Button]
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             required:
+ *               - userId
+ *               - name
+ *               - location
+ *             properties:
+ *               userId:
+ *                 type: integer
+ *               name:
+ *                 type: string
+ *               location:
+ *                 type: string
+ *     responses:
+ *       201:
+ *         description: Emergency triggered
+ *       500:
+ *         description: Error triggering emergency
+ */
 app.put("/api/panicButton/:id",  panicButtonController.updateEmergency);
+/**
+ * @swagger
+ * /api/panicButton/{id}:
+ *   put:
+ *     summary: Update emergency status (e.g. to Resolved)
+ *     tags: [Panic Button]
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         required: true
+ *         schema:
+ *           type: integer
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             required:
+ *               - status
+ *             properties:
+ *               status:
+ *                 type: string
+ *                 example: resolved
+ *     responses:
+ *       200:
+ *         description: Emergency updated
+ *       404:
+ *         description: Emergency not found
+ */
 app.delete("/api/panicButton/:id", panicButtonController.deleteEmergency);
+/**
+ * @swagger
+ * /api/panicButton/{id}:
+ *   delete:
+ *     summary: Delete an emergency record
+ *     tags: [Panic Button]
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         required: true
+ *         schema:
+ *           type: integer
+ *     responses:
+ *       200:
+ *         description: Emergency deleted
+ *       404:
+ *         description: Emergency not found
+ */
 
 //Profile//
 const loginController = require('./Login/MVC/loginController');
