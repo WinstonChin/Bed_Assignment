@@ -1163,6 +1163,10 @@ app.use((err, req, res, next) => {
     res.status(500).json({ error: 'Something went wrong!' });
 });
 
+// Profile routes 
+app.get('/api/users/:id', loginController.getUserById);
+app.put('/api/users/:id', loginController.updateUser);
+app.delete('/api/users/:id', loginController.deleteUser);
 
 // Database Connection
 async function startServer() {
