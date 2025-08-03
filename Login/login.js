@@ -127,7 +127,7 @@ async function login(e) {
       localStorage.setItem('token', data.token);
 
       setTimeout(() => {
-        window.location.href = 'home.html';
+        window.location.href = 'index.html';
       }, 1100);
     } else {
       alert(data.error || "Login failed");
